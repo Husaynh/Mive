@@ -1,0 +1,2472 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>سامانه صادرات و پخش عمده میوه</title>
+<link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
+<style>
+:root{
+  --bg:#eef1f6; --bg2:#f3f5f9; --sd:#c8cedb; --sl:#ffffff;
+  --txt:#38435a; --muted:#7c879c; --line:#d9dee8;
+  --pri:#ea580c; --pri2:#f59e0b;
+  --ok:#16a34a; --warn:#f59e0b; --bad:#e11d48; --info:#0284c7;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);min-height:100vh;font-family:Vazirmatn,'Segoe UI',Tahoma,sans-serif;font-size:14px}
+.neu{background:var(--bg);border-radius:20px;box-shadow:9px 9px 18px var(--sd),-9px -9px 18px var(--sl)}
+.neu-s{background:var(--bg);border-radius:14px;box-shadow:5px 5px 10px var(--sd),-5px -5px 10px var(--sl)}
+.neu-in{background:var(--bg);border-radius:14px;box-shadow:inset 4px 4px 8px var(--sd),inset -4px -4px 8px var(--sl)}
+
+/* ===== Login ===== */
+.login-wrap{min-height:100vh;display:grid;place-items:center;padding:20px}
+.login-card{width:100%;max-width:420px;padding:34px 28px;border-radius:26px;text-align:center}
+.login-logo{width:78px;height:78px;display:grid;place-items:center;font-size:36px;border-radius:24px;margin:0 auto 18px}
+.login-card h1{margin:0 0 4px;font-size:1.3rem}
+.login-sub{color:var(--muted);font-size:.85rem;margin:0 0 22px}
+.login-card form{display:flex;flex-direction:column;gap:14px;text-align:right}
+.login-hint{margin-top:20px;padding:14px;background:var(--bg2);border-radius:14px;text-align:right;font-size:.75rem;color:var(--muted);line-height:1.9}
+.login-hint p{margin:0 0 6px;font-weight:600;color:var(--txt)}
+#loginErr{color:var(--bad);font-size:.8rem;min-height:18px;text-align:center}
+
+/* ===== Layout ===== */
+.wrap{display:grid;grid-template-columns:256px 1fr;gap:22px;padding:22px;min-height:100vh;max-width:1700px;margin:0 auto}
+@media(max-width:980px){.wrap{grid-template-columns:1fr;padding:14px;gap:14px}}
+.side{position:sticky;top:22px;height:calc(100vh - 44px);padding:18px 14px;display:flex;flex-direction:column;gap:16px}
+@media(max-width:980px){.side{position:static;height:auto}}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 6px}
+.brand .logo{width:46px;height:46px;display:grid;place-items:center;font-size:22px;border-radius:15px;flex:none}
+.brand b{display:block;font-size:.88rem;line-height:1.3}
+.brand small{color:var(--muted);font-size:.7rem;display:block}
+nav{display:flex;flex-direction:column;gap:6px;overflow:auto;flex:1;padding-left:2px}
+.nav-btn{display:flex;align-items:center;gap:10px;border:0;cursor:pointer;font-family:inherit;font-size:.82rem;color:var(--txt);padding:9px 12px;border-radius:13px;background:var(--bg);box-shadow:4px 4px 9px var(--sd),-4px -4px 9px var(--sl);transition:.15s;text-align:right}
+.nav-btn span.ic{font-size:1rem;width:20px;text-align:center;flex:none}
+.nav-btn:hover{color:var(--pri)}
+.nav-btn.active{color:#fff;background:linear-gradient(135deg,var(--pri),var(--pri2));box-shadow:5px 5px 12px #c8cedb,-4px -4px 10px var(--sl)}
+.side-foot{display:flex;flex-direction:column;gap:9px}
+main{display:flex;flex-direction:column;gap:20px;min-width:0}
+.topbar{display:flex;align-items:center;gap:14px;padding:12px 16px;flex-wrap:wrap}
+.search{display:flex;align-items:center;gap:8px;padding:9px 14px;flex:1;min-width:180px}
+.search input{border:0;background:transparent;outline:none;font-family:inherit;font-size:.86rem;color:var(--txt);width:100%}
+.top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pill{padding:8px 14px;font-size:.78rem;color:var(--muted);border-radius:12px}
+.user-chip{display:flex;align-items:center;gap:8px;padding:6px 12px;border-radius:12px}
+.user-chip .av{width:32px;height:32px;border-radius:11px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--pri),var(--pri2));font-weight:700;font-size:.9rem}
+
+/* ===== Buttons / Form ===== */
+.btn{border:0;cursor:pointer;border-radius:14px;padding:10px 16px;font-family:inherit;font-size:.85rem;background:var(--bg);color:var(--txt);box-shadow:4px 4px 9px var(--sd),-4px -4px 9px var(--sl);transition:.15s;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
+.btn:hover{color:var(--pri)}
+.btn:active{box-shadow:inset 3px 3px 7px var(--sd),inset -3px -3px 7px var(--sl)}
+.btn.primary{color:#fff;background:linear-gradient(135deg,var(--pri),var(--pri2));box-shadow:5px 5px 12px #c8cedb,-4px -4px 10px var(--sl)}
+.btn.primary:hover{color:#fff;filter:brightness(1.06)}
+.btn.ok{color:#fff;background:linear-gradient(135deg,#34d399,#16a34a)}
+.btn.ok:hover{color:#fff}
+.btn.bad{color:#fff;background:linear-gradient(135deg,#fb7185,#e11d48)}
+.btn.bad:hover{color:#fff}
+.btn.warn{color:#fff;background:linear-gradient(135deg,#fbbf24,#f59e0b)}
+.btn.warn:hover{color:#fff}
+.btn.sm{padding:6px 11px;font-size:.76rem;border-radius:11px}
+.btn.full{width:100%}
+.fld{display:flex;flex-direction:column;gap:6px;font-size:.79rem;color:var(--muted)}
+.fld.full{grid-column:1/-1}
+.fld input,.fld select,.fld textarea{border:0;outline:none;font-family:inherit;font-size:.86rem;color:var(--txt);padding:10px 13px;border-radius:13px;background:var(--bg);box-shadow:inset 4px 4px 8px var(--sd),inset -4px -4px 8px var(--sl);width:100%}
+.fld input:focus,.fld select:focus,.fld textarea:focus{box-shadow:inset 4px 4px 8px var(--sd),inset -4px -4px 8px var(--sl),0 0 0 2px #f8c39a}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:760px){.grid2,.grid3,.grid4{grid-template-columns:1fr}}
+
+/* ===== Cards ===== */
+.card{padding:20px;margin-bottom:20px;border-radius:20px}
+.card h3{margin:0 0 16px;font-size:1rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.card h4{margin:16px 0 10px;font-size:.86rem;color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:20px}
+.stat{padding:16px 18px;border-radius:20px}
+.stat .i{font-size:1.3rem}
+.stat .t{font-size:.74rem;color:var(--muted);margin-top:8px}
+.stat .v{font-size:1.35rem;font-weight:700;margin-top:4px}
+.toolbar{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:16px}
+.tbl{width:100%;border-collapse:separate;border-spacing:0 8px;font-size:.83rem}
+.tbl th{font-weight:600;color:var(--muted);text-align:right;padding:4px 12px;font-size:.74rem;white-space:nowrap}
+.tbl td{background:var(--bg2);padding:11px 12px;vertical-align:middle}
+.tbl tbody tr td:first-child{border-radius:0 14px 14px 0}
+.tbl tbody tr td:last-child{border-radius:14px 0 0 14px}
+.tbl tbody tr:hover td{background:#e8ecf4}
+.tbl-wrap{overflow-x:auto}
+.tbl tfoot td{background:#e2e7f1;font-weight:700;border-radius:0!important}
+.badge{display:inline-block;padding:4px 10px;border-radius:10px;font-size:.72rem;font-weight:600}
+.b-ok{background:#dcfce7;color:#15803d}
+.b-bad{background:#ffe4e6;color:#be123c}
+.b-warn{background:#fef3c7;color:#b45309}
+.b-info{background:#e0f2fe;color:#0369a1}
+.b-mut{background:#e5e9f2;color:#5b6478}
+.b-pri{background:#ffedd5;color:#c2410c}
+.empty{text-align:center;color:var(--muted);padding:34px;font-size:.85rem}
+.hint{font-size:.76rem;color:var(--muted);line-height:2}
+.bar-track{height:10px;border-radius:10px;background:var(--bg);box-shadow:inset 2px 2px 4px var(--sd),inset -2px -2px 4px var(--sl);overflow:hidden}
+.bar-track>i{display:block;height:100%;border-radius:10px;background:linear-gradient(90deg,var(--pri),var(--pri2))}
+
+/* charts */
+.chart-bars{display:flex;flex-direction:column;gap:11px}
+.chart-row{display:grid;grid-template-columns:110px 1fr 92px;align-items:center;gap:12px;font-size:.79rem}
+.chart-row .lbl{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chart-row .val{text-align:left;font-weight:700;font-size:.78rem;direction:ltr}
+.chart-track{height:14px;border-radius:9px;background:var(--bg2);overflow:hidden;box-shadow:inset 2px 2px 4px var(--sd),inset -2px -2px 4px var(--sl)}
+.chart-track>i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,var(--pri2),var(--pri));transition:width .5s}
+.donut-wrap{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.donut-wrap svg{width:150px;height:150px;flex:none}
+.legend{display:flex;flex-direction:column;gap:8px;font-size:.79rem}
+.legend div{display:flex;align-items:center;gap:8px}
+.legend i{width:11px;height:11px;border-radius:4px;display:inline-block;flex:none}
+
+/* modal */
+.modal-bg{position:fixed;inset:0;background:rgba(56,67,90,.34);backdrop-filter:blur(4px);display:grid;place-items:center;padding:18px;z-index:99}
+.modal{width:100%;max-width:660px;max-height:90vh;overflow:auto;padding:22px;border-radius:22px;animation:pop .18s ease;background:var(--bg)}
+.modal.wide{max-width:940px}
+@keyframes pop{from{transform:scale(.96);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.modal-head h3{margin:0;font-size:1rem}
+.modal-foot{display:flex;gap:10px;justify-content:flex-start;margin-top:20px;flex-wrap:wrap}
+.icon-btn{border:0;cursor:pointer;width:34px;height:34px;border-radius:11px;background:var(--bg);color:var(--muted);box-shadow:3px 3px 7px var(--sd),-3px -3px 7px var(--sl);font-family:inherit;font-size:.9rem}
+
+/* toast */
+#toasts{position:fixed;bottom:22px;left:22px;display:flex;flex-direction:column;gap:10px;z-index:200;max-width:340px}
+.toast{padding:12px 18px;border-radius:14px;font-size:.82rem;background:var(--bg);box-shadow:6px 6px 14px var(--sd),-6px -6px 14px var(--sl);animation:slide .2s ease}
+@keyframes slide{from{transform:translateX(-20px);opacity:0}to{transform:translateX(0);opacity:1}}
+.toast.ok{border-right:4px solid var(--ok)}
+.toast.bad{border-right:4px solid var(--bad)}
+.toast.warn{border-right:4px solid var(--warn)}
+.toast.info{border-right:4px solid var(--info)}
+
+/* doc preview */
+.doc-preview{background:#fff;border-radius:16px;padding:14px;overflow:auto;box-shadow:inset 0 0 0 1px var(--line)}
+.doc-preview .doc-a4{transform-origin:top right;transform:scale(.62);margin-bottom:-38%}
+
+/* ================= PRINT ================= */
+#printSheet{display:none}
+@media print{
+  @page{size:A4 portrait;margin:8mm}
+  html,body{background:#fff!important;margin:0;padding:0}
+  #app,#loginScreen,.modal-bg,#toasts{display:none!important}
+  #printSheet{display:block!important}
+  .doc-a4{width:194mm;min-height:281mm;direction:rtl;color:#111;font-family:Vazirmatn,Tahoma,sans-serif;
+          -webkit-print-color-adjust:exact;print-color-adjust:exact;font-size:9.5pt;position:relative;
+          padding-bottom:14mm;display:flex;flex-direction:column}
+}
+/* doc styles shared preview+print */
+.doc-a4{background:#fff;color:#111;font-size:11px;direction:rtl;font-family:Vazirmatn,Tahoma,sans-serif;
+        -webkit-print-color-adjust:exact;print-color-adjust:exact}
+.doc-a4 *{box-sizing:border-box}
+.dh{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;
+    border-bottom:2px solid #ea580c;padding-bottom:9px;margin-bottom:11px}
+.dh .brandbox{display:flex;gap:11px;align-items:center}
+.dh .logo{width:46px;height:46px;border-radius:13px;background:linear-gradient(135deg,#ea580c,#f59e0b);
+          color:#fff;display:grid;place-items:center;font-size:22px;flex:none}
+.dh h1{margin:0;font-size:14px;font-weight:800;letter-spacing:-.2px}
+.dh .sub{font-size:8.6px;color:#555;line-height:1.7;margin-top:2px}
+.dh .meta{text-align:left;font-size:9px;line-height:1.9;white-space:nowrap}
+.dh .meta b{color:#ea580c}
+.doc-title{text-align:center;font-size:15px;font-weight:800;letter-spacing:1px;
+           background:linear-gradient(90deg,#fff7ed,#ffedd5,#fff7ed);border:1px solid #fed7aa;
+           border-radius:8px;padding:6px;margin-bottom:11px;color:#9a3412}
+.parties{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:11px}
+.pbox{border:1px solid #e5e7eb;border-radius:8px;padding:8px 10px;font-size:9.2px;line-height:1.9;background:#fafafa}
+.pbox b{color:#ea580c;font-size:8.4px;display:block;margin-bottom:3px;letter-spacing:.3px}
+table.dt{width:100%;border-collapse:collapse;font-size:9.2px;margin-bottom:10px}
+table.dt th{background:#fff1e6;color:#9a3412;font-size:8.5px;padding:6px 5px;border:1px solid #fed7aa;font-weight:700}
+table.dt td{padding:5px;border:1px solid #e5e7eb;text-align:center}
+table.dt td.r{text-align:right}
+table.dt tbody tr:nth-child(even) td{background:#fcfcfd}
+table.dt tfoot td{background:#f8fafc;font-weight:800;border-top:2px solid #ea580c}
+.totbox{display:flex;justify-content:flex-end;margin-bottom:10px}
+.totbox table{font-size:9.6px;border-collapse:collapse;min-width:230px}
+.totbox td{padding:5px 10px;border-bottom:1px solid #eee}
+.totbox tr.grand td{background:#fff1e6;color:#9a3412;font-weight:800;font-size:11px;border:1px solid #fed7aa;border-radius:6px}
+.inwords{border:1px dashed #cbd5e1;border-radius:8px;padding:7px 10px;font-size:9px;color:#475569;margin-bottom:11px;background:#f8fafc}
+.chartbox{border:1px solid #e5e7eb;border-radius:8px;padding:9px 11px;margin-bottom:11px;background:#fff}
+.chartbox .ct{font-size:8.6px;color:#64748b;margin-bottom:8px;font-weight:700}
+.pchart{display:flex;flex-direction:column;gap:6px}
+.pchart .prow{display:grid;grid-template-columns:86px 1fr 74px;gap:8px;align-items:center;font-size:8.6px}
+.pchart .pt{height:9px;background:#f1f5f9;border-radius:5px;overflow:hidden}
+.pchart .pt>i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,#f59e0b,#ea580c)}
+.pchart .pv{text-align:left;direction:ltr;font-weight:700;font-size:8.4px}
+.signs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:auto;padding-top:16px;font-size:9px;text-align:center}
+.signs .s{border-top:1px dotted #94a3b8;padding-top:6px;color:#475569}
+.foot{position:absolute;bottom:4mm;right:0;left:0;border-top:1px solid #e2e8f0;padding-top:5px;
+      font-size:7.6px;color:#94a3b8;display:flex;justify-content:space-between}
+/* weigh ticket */
+.ticket{border:2px dashed #ea580c;border-radius:12px;padding:14px;margin-bottom:12px}
+.ticket .bigrow{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
+.ticket .big{border:1px solid #fed7aa;border-radius:10px;padding:10px;text-align:center;background:#fff7ed}
+.ticket .big small{display:block;font-size:8.4px;color:#9a3412;margin-bottom:4px}
+.ticket .big b{font-size:19px;color:#c2410c;direction:ltr;display:block}
+.ticket .big span{font-size:8px;color:#94a3b8}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;font-size:9.4px}
+.kv div{display:flex;justify-content:space-between;border-bottom:1px dotted #e2e8f0;padding:3px 0}
+.kv div b{color:#334155}
+.stamp{position:absolute;left:12mm;bottom:40mm;border:2px solid #ea580c;color:#ea580c;
+       border-radius:50%;width:26mm;height:26mm;display:grid;place-items:center;font-size:7.4px;
+       text-align:center;transform:rotate(-14deg);opacity:.55;font-weight:800;line-height:1.4}
+
+/* docs page */
+.doc-item{padding:14px 16px;border-radius:14px;background:var(--bg2);margin-bottom:10px;border-right:4px solid var(--pri)}
+.doc-item b{display:block;margin-bottom:6px;font-size:.88rem}
+.doc-item p{margin:0;font-size:.8rem;color:var(--muted);line-height:2}
+</style>
+</head>
+<body>
+
+<!-- ================= LOGIN ================= -->
+<div id="loginScreen" class="login-wrap">
+  <div class="login-card neu">
+    <div class="login-logo neu-in">🍎</div>
+    <h1 id="loginTitle">صادرات و پخش عمده میوه</h1>
+    <p class="login-sub" id="loginSub">ورود به حساب کاربری</p>
+    <form id="loginForm" onsubmit="doLogin(event)">
+      <label class="fld"><span>نام کاربری</span><input id="loginUser" autocomplete="username" required></label>
+      <label class="fld"><span>رمز عبور</span><input id="loginPass" type="password" autocomplete="current-password" required></label>
+      <div id="loginErr"></div>
+      <button class="btn primary full" type="submit">🔐 ورود</button>
+    </form>
+    <div class="login-hint">
+      <p>راهنمای ورود اولیه:</p>
+      <small>مدیر سیستم: <b>admin</b> / <b>admin</b></small><br>
+      <small>مدیرعامل: <b>manager</b> / <b>1234</b></small><br>
+      <small>سرکارگر: <b>foreman</b> / <b>1234</b></small><br>
+      <small>حسابدار: <b>acc</b> / <b>1234</b></small>
+    </div>
+  </div>
+</div>
+
+<!-- ================= APP ================= -->
+<div id="app" class="wrap" style="display:none">
+  <aside class="side neu">
+    <div class="brand">
+      <div class="logo neu-in">🍎</div>
+      <div><b id="brandName">میوه پارس</b><small id="brandYear">1404</small></div>
+    </div>
+    <nav id="nav"></nav>
+    <div class="side-foot">
+      <button class="btn full" onclick="go('docs')">📖 راهنمای کاربری</button>
+      <button class="btn full bad" onclick="doLogout()">🚪 خروج</button>
+    </div>
+  </aside>
+  <main>
+    <header class="topbar neu">
+      <div class="search neu-in"><span>🔎</span><input id="q" placeholder="جستجو در این بخش..."></div>
+      <div class="top-actions">
+        <span class="pill neu-s" id="datePill"></span>
+        <div class="user-chip neu-s">
+          <div class="av" id="avatar">؟</div>
+          <div><b id="userName" style="font-size:.83rem">—</b><small style="display:block;color:var(--muted);font-size:.7rem" id="userRole">—</small></div>
+        </div>
+      </div>
+    </header>
+    <section id="view"></section>
+  </main>
+</div>
+
+<div id="printSheet"></div>
+<div id="toasts"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+/* ============================================================
+   1) ابزارها
+   ============================================================ */
+const $  = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
+const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const isoToday = () => new Date().toISOString().slice(0,10);
+const faDate = d => { if(!d) return '—'; try{ return new Date(d).toLocaleDateString('fa-IR'); }catch(e){ return d; } };
+const num = n => (Number(n)||0).toLocaleString('fa-IR',{maximumFractionDigits:2});
+const money = n => Math.round(Number(n)||0).toLocaleString('fa-IR');
+const toFa = n => String(n).replace(/\d/g,d=>'۰۱۲۳۴۵۶۷۸۹'[d]);
+const sum = (arr,f)=> arr.reduce((a,x)=>a+(Number(f(x))||0),0);
+const codeNum = ()=> String(Math.floor(Math.random()*9000)+1000);
+
+/* اعداد به حروف (تومان) */
+function toWords(num){
+  num = Math.round(Number(num)||0);
+  if(num===0) return 'صفر';
+  const yek=['','یک','دو','سه','چهار','پنج','شش','هفت','هشت','نه'];
+  const dah=['','','بیست','سی','چهل','پنجاه','شصت','هفتاد','هشتاد','نود'];
+  const dah2=['ده','یازده','دوازده','سیزده','چهارده','پانزده','شانزده','هفده','هجده','نوزده'];
+  const sad=['','صد','دویست','سیصد','چهارصد','پانصد','ششصد','هفتصد','هشتصد','نهصد'];
+  const scale=['','هزار','میلیون','میلیارد','بیلیون'];
+  function three(n){
+    let out=[];
+    const s=Math.floor(n/100), d=Math.floor((n%100)/10), y=n%10;
+    if(s) out.push(sad[s]);
+    if(d===1) out.push(dah2[y]);
+    else{ if(d) out.push(dah[d]); if(y) out.push(yek[y]); }
+    return out.join(' و ');
+  }
+  const parts=[]; let i=0;
+  while(num>0){
+    const g = num%1000;
+    if(g) parts.unshift(three(g)+ (scale[i]?(' '+scale[i]):''));
+    num = Math.floor(num/1000); i++;
+  }
+  return parts.join(' و ');
+}
+
+/* ============================================================
+   2) ثابت‌ها
+   ============================================================ */
+const ROLES = {
+  admin:      {label:'مدیر سیستم',  color:'#ea580c'},
+  manager:    {label:'مدیرعامل',    color:'#7c3aed'},
+  foreman:    {label:'سرکارگر',     color:'#0284c7'},
+  accountant: {label:'حسابدار',     color:'#16a34a'}
+};
+
+const TABS = {
+  admin:[
+    ['dash','📊','داشبورد'],
+    ['packing','📦','ثبت بسته‌بندی'],
+    ['consign','🚛','محموله‌ها'],
+    ['agg','Σ','جمع‌بندی محصولات'],
+    ['weigh','⚖️','قبض باسکول'],
+    ['invoice','🧾','فاکتورها'],
+    ['reports','📈','گزارش‌ها'],
+    ['workers','👷','کارگران'],
+    ['fruits','🍎','میوه‌ها'],
+    ['companies','🏢','مجموعه‌ها'],
+    ['customers','🛒','خریداران'],
+    ['drivers','🧑‍✈️','رانندگان'],
+    ['trucks','🚚','کامیون‌ها'],
+    ['users','🔐','کاربران'],
+    ['settings','⚙️','تنظیمات'],
+    ['docs','📖','راهنما']
+  ],
+  manager:[
+    ['dash','📊','داشبورد'],
+    ['packing','📦','ثبت بسته‌بندی'],
+    ['consign','🚛','محموله‌ها'],
+    ['agg','Σ','جمع‌بندی محصولات'],
+    ['weigh','⚖️','قبض باسکول'],
+    ['invoice','🧾','فاکتورها'],
+    ['reports','📈','گزارش‌ها'],
+    ['workers','👷','کارگران'],
+    ['fruits','🍎','میوه‌ها'],
+    ['companies','🏢','مجموعه‌ها'],
+    ['customers','🛒','خریداران'],
+    ['drivers','🧑‍✈️','رانندگان'],
+    ['trucks','🚚','کامیون‌ها'],
+    ['settings','⚙️','تنظیمات'],
+    ['docs','📖','راهنما']
+  ],
+  foreman:[
+    ['dash','📊','داشبورد'],
+    ['packing','📦','ثبت بسته‌بندی'],
+    ['consign','🚛','محموله‌ها'],
+    ['agg','Σ','جمع‌بندی محصولات'],
+    ['weigh','⚖️','قبض باسکول'],
+    ['workers','👷','کارگران'],
+    ['fruits','🍎','میوه‌ها'],
+    ['docs','📖','راهنما']
+  ],
+  accountant:[
+    ['dash','📊','داشبورد'],
+    ['agg','Σ','جمع‌بندی محصولات'],
+    ['weigh','⚖️','قبض باسکول'],
+    ['invoice','🧾','فاکتورها'],
+    ['reports','📈','گزارش‌ها'],
+    ['customers','🛒','خریداران'],
+    ['consign','🚛','محموله‌ها'],
+    ['docs','📖','راهنما']
+  ]
+};
+
+/* ============================================================
+   3) دیتابیس
+   ============================================================ */
+const LS='fruit_export_v1';
+const SESSION='fruit_export_session';
+let DB={}; let CU=null;
+
+function save(){ try{ localStorage.setItem(LS, JSON.stringify(DB)); }catch(e){ toast('خطا در ذخیره','bad'); } }
+
+function seed(){
+  DB = {
+    settings:{
+      company:'صادرات و پخش عمده میوه پارس',
+      brand:'میوه پارس',
+      year:'1404',
+      address:'شیراز، بلوار صنایع، شهرک صنعتی، خیابان ۱۲',
+      phone:'071-37000000 — 0917-0000000',
+      economicCode:'411234567890',
+      nationalId:'14001234567',
+      footerNote:'این فاکتور به‌عنوان سند رسمی معتبر است. کالای فروخته‌شده بازگشت‌ناپذیر است.',
+      bank:'بانک ملت — 1234567890 (میوه پارس)'
+    },
+    users:[
+      {id:'u_admin', username:'admin', password:'admin', role:'admin', name:'مدیر سیستم', active:true},
+      {id:'u_mgr',   username:'manager', password:'1234', role:'manager', name:'مدیرعامل', active:true},
+      {id:'u_fore',  username:'foreman', password:'1234', role:'foreman', name:'سرکارگر اصلی', active:true},
+      {id:'u_acc',   username:'acc', password:'1234', role:'accountant', name:'حسابدار', active:true}
+    ],
+    fruits:[
+      {id:'f1', name:'سیب',    variety:'قرمز دماوند', pricePerKg:42000, basketWeight:18, active:true},
+      {id:'f2', name:'سیب',    variety:'سبز',         pricePerKg:38000, basketWeight:18, active:true},
+      {id:'f3', name:'پرتقال', variety:'تامسون',      pricePerKg:35000, basketWeight:20, active:true},
+      {id:'f4', name:'نارنگی', variety:'کلمانتین',    pricePerKg:48000, basketWeight:15, active:true},
+      {id:'f5', name:'انگور',  variety:'عسگری',       pricePerKg:65000, basketWeight:12, active:true},
+      {id:'f6', name:'هلو',    variety:'زعفرانی',     pricePerKg:55000, basketWeight:14, active:true}
+    ],
+    companies:[
+      {id:'co1', name:'باغات بهاران',  owner:'حسین احمدی', phone:'09171234567', address:'سعادت‌شهر', active:true},
+      {id:'co2', name:'مجموعه سبز دشت', owner:'رضا کریمی',  phone:'09129876543', address:'کوار',      active:true}
+    ],
+    customers:[
+      {id:'cu1', name:'میوه‌فروشی مرکزی', phone:'09171112233', address:'شیراز، خیابان زند', economicCode:'', active:true},
+      {id:'cu2', name:'بازار میوه تهران', phone:'09122223344', address:'تهران، میدان میوه و تره‌بار', economicCode:'', active:true}
+    ],
+    workers:[
+      {id:'w1', name:'علی رضایی',   code:'W-01', phone:'09170000001', dailyWage:500000, active:true},
+      {id:'w2', name:'محمد حسینی',  code:'W-02', phone:'09170000002', dailyWage:500000, active:true},
+      {id:'w3', name:'حسن کریمی',   code:'W-03', phone:'09170000003', dailyWage:500000, active:true},
+      {id:'w4', name:'مهدی صادقی',  code:'W-04', phone:'09170000004', dailyWage:500000, active:true}
+    ],
+    foremen:[
+      {id:'fo1', name:'سرکارگر اصلی', phone:'09170000010', active:true},
+      {id:'fo2', name:'سرکارگر شیفت دوم', phone:'09170000011', active:true}
+    ],
+    drivers:[
+      {id:'dr1', name:'اکبر محمدی', phone:'09170000021', license:'1234567890', active:true},
+      {id:'dr2', name:'قاسم نوری',  phone:'09170000022', license:'0987654321', active:true}
+    ],
+    trucks:[
+      {id:'tr1', plate:'78 ع 452 ایران 11', model:'ایسوزو ۶ تن', capacity:6000, active:true},
+      {id:'tr2', plate:'42 ب 819 ایران 11', model:'بنز ۱۰ تن',  capacity:10000, active:true}
+    ],
+    consignments:[], packing:[], weighbridges:[], invoices:[]
+  };
+  save();
+}
+
+function load(){
+  const raw = localStorage.getItem(LS);
+  if(raw){ try{ DB = JSON.parse(raw); }catch(e){ DB=null; } }
+  if(!DB || !DB.users || !DB.settings){ seed(); }
+  migrate();
+}
+
+function migrate(){
+  const defs = {
+    fruits:[], companies:[], customers:[], workers:[], foremen:[], drivers:[], trucks:[],
+    consignments:[], packing:[], weighbridges:[], invoices:[]
+  };
+  Object.keys(defs).forEach(k=>{ if(!Array.isArray(DB[k])) DB[k]=defs[k]; });
+  if(!DB.settings) DB.settings={company:'صادرات میوه', brand:'میوه', year:'1404', address:'', phone:'', economicCode:'', nationalId:'', footerNote:'', bank:''};
+  if(!DB.users.find(u=>u.role==='admin')){
+    DB.users.push({id:'u_admin', username:'admin', password:'admin', role:'admin', name:'مدیر سیستم', active:true});
+  }
+  save();
+}
+
+/* ============================================================
+   4) Auth
+   ============================================================ */
+function doLogin(e){
+  e.preventDefault();
+  const u = $('#loginUser').value.trim();
+  const p = $('#loginPass').value;
+  const user = DB.users.find(x=>x.username===u && x.password===p);
+  if(!user){ $('#loginErr').textContent='نام کاربری یا رمز عبور اشتباه است.'; return; }
+  if(!user.active){ $('#loginErr').textContent='حساب کاربری غیرفعال است.'; return; }
+  CU = user;
+  localStorage.setItem(SESSION, user.id);
+  showApp();
+}
+function doLogout(){
+  if(!confirm('از حساب کاربری خارج می‌شوید؟')) return;
+  CU=null; localStorage.removeItem(SESSION);
+  $('#loginScreen').style.display=''; $('#app').style.display='none';
+  $('#loginUser').value=''; $('#loginPass').value=''; $('#loginErr').textContent='';
+}
+function showApp(){
+  $('#loginScreen').style.display='none';
+  $('#app').style.display='';
+  $('#brandName').textContent = DB.settings.brand || 'میوه';
+  $('#brandYear').textContent = 'سال ' + (DB.settings.year||'');
+  $('#userName').textContent = CU.name;
+  $('#userRole').textContent = ROLES[CU.role].label;
+  $('#avatar').textContent = CU.name.charAt(0);
+  $('#datePill').textContent = new Date().toLocaleDateString('fa-IR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  state.tab = (TABS[CU.role]||[['dash']])[0][0];
+  state.sub = null; state.q='';
+  render();
+}
+
+/* ============================================================
+   5) State / Nav
+   ============================================================ */
+const state = { tab:'dash', sub:null, q:'', page:1 };
+const pState = { cid:'', dateFrom:'', dateTo:'' };
+
+function go(tab, sub){ state.tab=tab; state.sub=sub||null; state.page=1; render(); window.scrollTo({top:0,behavior:'smooth'}); }
+
+function render(){
+  const tabs = TABS[CU.role]||[];
+  $('#nav').innerHTML = tabs.map(([k,i,t])=>
+    `<button class="nav-btn ${state.tab===k?'active':''}" onclick="go('${k}')"><span class="ic">${i}</span>${t}</button>`
+  ).join('');
+
+  const map = {
+    dash:vDash, packing:vPacking, consign:vConsign, agg:vAgg, weigh:vWeigh,
+    invoice:vInvoices, reports:vReports, workers:vWorkers, fruits:vFruits,
+    companies:vCompanies, customers:vCustomers, drivers:vDrivers, trucks:vTrucks,
+    users:vUsers, settings:vSettings, docs:vDocs
+  };
+  let html = (map[state.tab]||vDash)();
+  $('#view').innerHTML = html;
+}
+
+/* ============================================================
+   6) Toast / Modal
+   ============================================================ */
+function toast(msg,type='ok'){
+  const d=document.createElement('div');
+  d.className='toast '+type; d.textContent=msg;
+  $('#toasts').appendChild(d);
+  setTimeout(()=>{ d.style.opacity='0'; d.style.transition='.3s'; setTimeout(()=>d.remove(),320); },3200);
+}
+function modal(title, html, onOk, okText='ذخیره', wide){
+  const m=document.createElement('div');
+  m.className='modal-bg';
+  m.innerHTML=`<div class="modal ${wide?'wide':''} neu">
+      <div class="modal-head"><h3>${title}</h3><button class="icon-btn" data-close>✕</button></div>
+      <div class="modal-body">${html}</div>
+      <div class="modal-foot">
+        ${onOk?`<button class="btn primary" data-ok>${okText}</button>`:''}
+        <button class="btn" data-close>انصراف</button>
+      </div>
+    </div>`;
+  document.body.appendChild(m);
+  m.addEventListener('click',e=>{
+    if(e.target===m || e.target.closest('[data-close]')) m.remove();
+    if(e.target.closest('[data-ok]')){
+      if(onOk && onOk(m)===false) return;
+      m.remove();
+    }
+  });
+  const f=m.querySelector('input,select,textarea'); if(f) setTimeout(()=>f.focus(),60);
+  return m;
+}
+
+/* ============================================================
+   7) Helpers
+   ============================================================ */
+const getFruit = id => DB.fruits.find(f=>f.id===id);
+const getComp  = id => DB.companies.find(c=>c.id===id);
+const getWork  = id => DB.workers.find(w=>w.id===id);
+const getDrv   = id => DB.drivers.find(d=>d.id===id);
+const getTrk   = id => DB.trucks.find(t=>t.id===id);
+const getFore  = id => DB.foremen.find(f=>f.id===id);
+const getCust  = id => DB.customers.find(c=>c.id===id);
+const getCons  = id => DB.consignments.find(c=>c.id===id);
+
+const fruitLabel = f => f ? `${f.name}${f.variety?(' — '+f.variety):''}` : '—';
+
+function packingOf(cid){ return DB.packing.filter(p=>p.consignmentId===cid); }
+function consTotals(cid){
+  const rows = packingOf(cid);
+  return {
+    baskets: sum(rows, r=>r.baskets),
+    fruits:  sum(rows, r=>r.baskets*r.fruitsPerBasket),
+    weight:  sum(rows, r=>r.baskets*r.weightPerBasket),
+    rows: rows.length
+  };
+}
+function consWeight(cid){ return consTotals(cid).weight; }
+
+function options(list, sel, valKey='id', labelFn=x=>x.name, emptyLabel){
+  let s = emptyLabel ? `<option value="">${emptyLabel}</option>` : '';
+  s += list.map(x=>`<option value="${x[valKey]}" ${String(x[valKey])===String(sel)?'selected':''}>${esc(labelFn(x))}</option>`).join('');
+  return s;
+}
+
+function pagerHTML(total, page, per=30){
+  const pages=Math.max(1,Math.ceil(total/per));
+  if(pages<=1) return '';
+  return `<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:16px">
+    ${Array.from({length:pages},(_,i)=>i+1).map(b=>`<button class="btn sm ${b===page?'primary':''}" onclick="state.page=${b};render()">${num(b)}</button>`).join('')}
+  </div>`;
+}
+
+/* نمودار میله‌ای */
+function barChart(data, unit=''){
+  if(!data.length) return '<div class="empty">داده‌ای موجود نیست</div>';
+  const max = Math.max(...data.map(d=>d.value),1);
+  return `<div class="chart-bars">`+data.map(d=>`
+    <div class="chart-row">
+      <span class="lbl" title="${esc(d.label)}">${esc(d.label)}</span>
+      <div class="chart-track"><i style="width:${Math.max(2,(d.value/max)*100)}%"></i></div>
+      <span class="val">${num(d.value)} ${unit}</span>
+    </div>`).join('')+`</div>`;
+}
+/* نمودار دونات */
+function donutChart(data){
+  const total = sum(data, d=>d.value);
+  if(!total) return '<div class="empty">داده‌ای موجود نیست</div>';
+  const colors=['#ea580c','#f59e0b','#16a34a','#0284c7','#7c3aed','#e11d48','#0891b2','#65a30d'];
+  const r=40, cx=50, cy=50, C=2*Math.PI*r;
+  let off=0;
+  const segs = data.map((d,i)=>{
+    const len = (d.value/total)*C;
+    const col = d.color||colors[i%colors.length];
+    const s = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${col}" stroke-width="17"
+      stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-off}" transform="rotate(-90 ${cx} ${cy})"/>`;
+    off+=len; return s;
+  }).join('');
+  const legend = data.map((d,i)=>
+    `<div><i style="background:${d.color||colors[i%colors.length]}"></i>${esc(d.label)}
+     <b style="margin-right:auto;padding-right:8px">${num(Math.round(d.value/total*100))}٪</b></div>`).join('');
+  return `<div class="donut-wrap">
+    <svg viewBox="0 0 100 100">${segs}
+      <text x="50" y="48" text-anchor="middle" font-size="8" fill="#7c879c">مجموع</text>
+      <text x="50" y="60" text-anchor="middle" font-size="10" font-weight="700" fill="#38435a">${num(total)}</text>
+    </svg>
+    <div class="legend" style="flex:1">${legend}</div>
+  </div>`;
+}
+
+/* ============================================================
+   8) داشبورد
+   ============================================================ */
+function vDash(){
+  const today = isoToday();
+  const todayPk = DB.packing.filter(p=>p.date===today);
+  const todayBaskets = sum(todayPk, p=>p.baskets);
+  const todayWeight  = sum(todayPk, p=>p.baskets*p.weightPerBasket);
+  const todayFruits  = sum(todayPk, p=>p.baskets*p.fruitsPerBasket);
+  const activeCons = DB.consignments.filter(c=>c.status!=='ارسال شده').length;
+  const todayInv = DB.invoices.filter(i=>i.date===today);
+  const todaySales = sum(todayInv, i=>i.total);
+  const totalWeight = sum(DB.packing, p=>p.baskets*p.weightPerBasket);
+
+  // نمودار بر اساس میوه
+  const byFruit = {};
+  DB.packing.forEach(p=>{
+    const c = getCons(p.consignmentId);
+    if(!c) return;
+    const f = getFruit(c.fruitId);
+    const k = f ? fruitLabel(f) : 'نامشخص';
+    byFruit[k] = (byFruit[k]||0) + p.baskets*p.weightPerBasket;
+  });
+  const fruitData = Object.entries(byFruit).map(([label,value])=>({label,value})).sort((a,b)=>b.value-a.value).slice(0,7);
+
+  // دونات بر اساس مجموعه
+  const byComp = {};
+  DB.packing.forEach(p=>{
+    const c = getCons(p.consignmentId); if(!c) return;
+    const co = getComp(c.companyId);
+    const k = co?co.name:'نامشخص';
+    byComp[k] = (byComp[k]||0) + p.baskets*p.weightPerBasket;
+  });
+  const compData = Object.entries(byComp).map(([label,value])=>({label,value})).sort((a,b)=>b.value-a.value).slice(0,6);
+
+  // ۷ روز اخیر
+  const days=[];
+  for(let i=6;i>=0;i--){
+    const d = new Date(); d.setDate(d.getDate()-i);
+    const iso = d.toISOString().slice(0,10);
+    const w = sum(DB.packing.filter(p=>p.date===iso), p=>p.baskets*p.weightPerBasket);
+    days.push({label: d.toLocaleDateString('fa-IR',{month:'short',day:'numeric'}), value:w});
+  }
+
+  const recent = DB.consignments.slice().reverse().slice(0,6);
+
+  return `
+  <div class="stats">
+    <div class="stat neu"><div class="i">📦</div><div class="t">سبدهای امروز</div><div class="v">${num(todayBaskets)}</div></div>
+    <div class="stat neu"><div class="i">⚖️</div><div class="t">وزن امروز (کیلو)</div><div class="v" style="color:var(--pri)">${num(todayWeight)}</div></div>
+    <div class="stat neu"><div class="i">🍎</div><div class="t">تعداد میوه امروز</div><div class="v">${num(todayFruits)}</div></div>
+    <div class="stat neu"><div class="i">🚛</div><div class="t">محموله فعال</div><div class="v">${num(activeCons)}</div></div>
+    <div class="stat neu"><div class="i">🧾</div><div class="t">فروش امروز (تومان)</div><div class="v" style="font-size:1.05rem;color:var(--ok)">${money(todaySales)}</div></div>
+    <div class="stat neu"><div class="i">📊</div><div class="t">مجموع وزن کل</div><div class="v" style="font-size:1.05rem">${num(totalWeight)}</div></div>
+  </div>
+
+  <div class="card neu">
+    <h3>⚡ دسترسی سریع</h3>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn primary" onclick="go('packing')">📦 ثبت بسته‌بندی</button>
+      <button class="btn" onclick="go('consign')">🚛 محموله جدید</button>
+      <button class="btn" onclick="go('agg')">Σ جمع‌بندی محصولات</button>
+      <button class="btn" onclick="go('invoice','new')">🧾 فاکتور جدید</button>
+      <button class="btn" onclick="go('weigh')">⚖️ قبض باسکول</button>
+    </div>
+  </div>
+
+  <div class="grid2" style="display:grid;grid-template-columns:1.25fr 1fr;gap:20px">
+    <div class="card neu" style="margin:0">
+      <h3>🍎 وزن بسته‌بندی شده به تفکیک میوه (کیلو)</h3>
+      ${barChart(fruitData,'kg')}
+    </div>
+    <div class="card neu" style="margin:0">
+      <h3>🏢 سهم مجموعه‌ها از وزن کل</h3>
+      ${donutChart(compData)}
+    </div>
+  </div>
+
+  <div class="card neu">
+    <h3>📈 روند ۷ روز اخیر (کیلوگرم)</h3>
+    ${barChart(days,'kg')}
+  </div>
+
+  <div class="card neu">
+    <h3>🚛 آخرین محموله‌ها</h3>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>کد</th><th>تاریخ</th><th>مجموعه</th><th>میوه</th><th>سبد</th><th>وزن (kg)</th><th>وضعیت</th><th></th></tr></thead>
+        <tbody>${recent.map(c=>{
+          const t = consTotals(c.id);
+          const f = getFruit(c.fruitId);
+          return `<tr>
+            <td dir="ltr" style="text-align:right">${esc(c.code)}</td>
+            <td>${faDate(c.date)}</td>
+            <td>${esc((getComp(c.companyId)||{}).name||'—')}</td>
+            <td>${esc(fruitLabel(f))}</td>
+            <td>${num(t.baskets)}</td>
+            <td><b>${num(t.weight)}</b></td>
+            <td><span class="badge ${c.status==='ارسال شده'?'b-ok':c.status==='آماده'?'b-info':'b-warn'}">${esc(c.status||'در حال بسته‌بندی')}</span></td>
+            <td><button class="btn sm" onclick="go('packing');setTimeout(()=>{pState.cid='${c.id}';render();},50)">📦</button></td>
+          </tr>`;
+        }).join('')||'<tr><td colspan="8" class="empty">محموله‌ای ثبت نشده</td></tr>'}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+/* ============================================================
+   9) ثبت بسته‌بندی (صفحه اصلی سرکارگر)
+   ============================================================ */
+function vPacking(){
+  if(!pState.cid && DB.consignments.length){
+    pState.cid = DB.consignments.slice().reverse().find(c=>c.status!=='ارسال شده')?.id || DB.consignments.slice(-1)[0].id;
+  }
+  const cid = pState.cid;
+  const c = cid ? getCons(cid) : null;
+  const consOpts = DB.consignments.slice().reverse().map(x=>
+    `<option value="${x.id}" ${x.id===cid?'selected':''}>${esc(x.code)} — ${esc((getComp(x.companyId)||{}).name||'')} — ${esc(fruitLabel(getFruit(x.fruitId)))} — ${faDate(x.date)}</option>`
+  ).join('');
+
+  if(!c){
+    return `<div class="card neu">
+      <h3>📦 ثبت بسته‌بندی</h3>
+      <div class="empty">
+        هنوز هیچ محموله‌ای ثبت نشده است.<br><br>
+        <button class="btn primary" onclick="go('consign','new')">＋ ساخت اولین محموله</button>
+      </div>
+    </div>`;
+  }
+
+  const f = getFruit(c.fruitId);
+  const t = consTotals(cid);
+  const rows = packingOf(cid).slice().reverse();
+
+  const workerOpts = DB.workers.filter(w=>w.active).map(w=>
+    `<option value="${w.id}">${esc(w.name)}${w.code?(' ('+w.code+')'):''}</option>`).join('');
+
+  const rowsHtml = rows.map(p=>{
+    const w = getWork(p.workerId);
+    return `<tr>
+      <td><b>${esc(w?w.name:'—')}</b></td>
+      <td>${num(p.baskets)}</td>
+      <td>${num(p.fruitsPerBasket)}</td>
+      <td>${num(p.baskets*p.fruitsPerBasket)}</td>
+      <td>${num(p.weightPerBasket)}</td>
+      <td><b>${num(p.baskets*p.weightPerBasket)}</b></td>
+      <td>${esc(p.note||'—')}</td>
+      <td style="white-space:nowrap">
+        <button class="btn sm" onclick="editPacking('${p.id}')">✏️</button>
+        <button class="btn sm bad" onclick="delPacking('${p.id}')">🗑️</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  return `
+  <div class="card neu">
+    <h3>📦 ثبت بسته‌بندی کارگران</h3>
+    <div class="toolbar">
+      <label class="fld" style="min-width:340px;flex:1"><span>محموله فعال</span>
+        <select onchange="pState.cid=this.value;render()">${consOpts || '<option value="">—</option>'}</select>
+      </label>
+      <button class="btn primary" onclick="go('consign','new')">＋ محموله جدید</button>
+      <button class="btn" onclick="go('consign')">📋 مدیریت محموله‌ها</button>
+    </div>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+      <span class="badge b-pri">کد: ${esc(c.code)}</span>
+      <span class="badge b-info">میوه: ${esc(fruitLabel(f))}</span>
+      <span class="badge b-mut">مجموعه: ${esc((getComp(c.companyId)||{}).name||'—')}</span>
+      <span class="badge b-mut">تاریخ: ${faDate(c.date)}</span>
+      <span class="badge ${c.status==='ارسال شده'?'b-ok':c.status==='آماده'?'b-info':'b-warn'}">${esc(c.status||'در حال بسته‌بندی')}</span>
+    </div>
+
+    <h4>➕ افزودن رکورد جدید</h4>
+    <div class="grid4" style="margin-bottom:14px">
+      <label class="fld"><span>کارگر *</span><select id="pkWorker">${workerOpts}</select></label>
+      <label class="fld"><span>تعداد سبد *</span><input id="pkBaskets" type="number" min="1" value="" placeholder="مثلاً 25"></label>
+      <label class="fld"><span>تعداد میوه در هر سبد *</span><input id="pkFpb" type="number" min="1" value="" placeholder="مثلاً 60"></label>
+      <label class="fld"><span>وزن هر سبد (کیلو) *</span><input id="pkWpb" type="number" min="0" step="0.01" value="" placeholder="مثلاً 18.5"></label>
+      <label class="fld full"><span>یادداشت</span><input id="pkNote" placeholder="اختیاری"></label>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px">
+      <button class="btn primary" onclick="addPacking()">＋ ثبت رکورد</button>
+      <button class="btn" onclick="quickFill()">✨ پرکردن وزن پیش‌فرض میوه</button>
+    </div>
+
+    <h4>Σ جمع کل این محموله</h4>
+    <div class="stats" style="margin-bottom:16px">
+      <div class="stat neu-s"><div class="i">🧺</div><div class="t">مجموع سبد</div><div class="v">${num(t.baskets)}</div></div>
+      <div class="stat neu-s"><div class="i">🍎</div><div class="t">مجموع میوه</div><div class="v">${num(t.fruits)}</div></div>
+      <div class="stat neu-s"><div class="i">⚖️</div><div class="t">مجموع وزن (kg)</div><div class="v" style="color:var(--pri)">${num(t.weight)}</div></div>
+      <div class="stat neu-s"><div class="i">📋</div><div class="t">تعداد رکورد</div><div class="v">${num(t.rows)}</div></div>
+    </div>
+
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr>
+          <th>کارگر</th><th>سبد</th><th>میوه/سبد</th><th>کل میوه</th><th>وزن/سبد</th><th>کل وزن (kg)</th><th>یادداشت</th><th>عملیات</th>
+        </tr></thead>
+        <tbody>${rowsHtml || '<tr><td colspan="8" class="empty">هنوز رکوردی ثبت نشده</td></tr>'}</tbody>
+        ${rows.length?`<tfoot><tr>
+          <td>جمع کل</td><td>${num(t.baskets)}</td><td>—</td><td>${num(t.fruits)}</td><td>—</td><td>${num(t.weight)}</td><td colspan="2"></td>
+        </tr></tfoot>`:''}
+      </table>
+    </div>
+  </div>`;
+}
+
+function quickFill(){
+  const c = getCons(pState.cid); if(!c) return;
+  const f = getFruit(c.fruitId);
+  if(f && f.basketWeight) $('#pkWpb').value = f.basketWeight;
+  toast('وزن پیش‌فرض میوه اعمال شد','info');
+}
+
+function addPacking(){
+  const cid = pState.cid;
+  if(!cid){ toast('ابتدا محموله را انتخاب کنید','bad'); return; }
+  const workerId = $('#pkWorker').value;
+  const baskets = parseFloat($('#pkBaskets').value);
+  const fpb = parseFloat($('#pkFpb').value);
+  const wpb = parseFloat($('#pkWpb').value);
+  if(!workerId){ toast('کارگر را انتخاب کنید','bad'); return; }
+  if(!(baskets>0)){ toast('تعداد سبد معتبر نیست','bad'); return; }
+  if(!(fpb>0)){ toast('تعداد میوه در سبد معتبر نیست','bad'); return; }
+  if(!(wpb>0)){ toast('وزن هر سبد معتبر نیست','bad'); return; }
+
+  DB.packing.push({
+    id:uid(), consignmentId:cid, workerId, baskets, fruitsPerBasket:fpb, weightPerBasket:wpb,
+    date: isoToday(), note: $('#pkNote').value.trim(), by: CU.name, at:new Date().toISOString()
+  });
+  save(); render();
+  toast('رکورد ثبت شد ✓');
+}
+
+function editPacking(id){
+  const p = DB.packing.find(x=>x.id===id); if(!p) return;
+  const workerOpts = DB.workers.map(w=>`<option value="${w.id}" ${w.id===p.workerId?'selected':''}>${esc(w.name)}</option>`).join('');
+  const html = `<div class="grid2">
+    <label class="fld"><span>کارگر</span><select name="workerId">${workerOpts}</select></label>
+    <label class="fld"><span>تعداد سبد</span><input name="baskets" type="number" min="1" value="${p.baskets}"></label>
+    <label class="fld"><span>تعداد میوه در سبد</span><input name="fpb" type="number" min="1" value="${p.fruitsPerBasket}"></label>
+    <label class="fld"><span>وزن هر سبد (kg)</span><input name="wpb" type="number" min="0" step="0.01" value="${p.weightPerBasket}"></label>
+    <label class="fld full"><span>یادداشت</span><input name="note" value="${esc(p.note||'')}"></label>
+  </div>`;
+  modal('✏️ ویرایش رکورد بسته‌بندی', html, m=>{
+    p.workerId = $('[name=workerId]',m).value;
+    p.baskets = parseFloat($('[name=baskets]',m).value)||0;
+    p.fruitsPerBasket = parseFloat($('[name=fpb]',m).value)||0;
+    p.weightPerBasket = parseFloat($('[name=wpb]',m).value)||0;
+    p.note = $('[name=note]',m).value.trim();
+    save(); render(); toast('ویرایش شد');
+  });
+}
+function delPacking(id){
+  if(!confirm('این رکورد حذف شود؟')) return;
+  DB.packing = DB.packing.filter(x=>x.id!==id);
+  save(); render(); toast('حذف شد','warn');
+}
+
+/* ============================================================
+   10) محموله‌ها
+   ============================================================ */
+function vConsign(){
+  if(state.sub==='new') return vConsignNew();
+
+  const list = DB.consignments.slice().reverse();
+  const rows = list.map(c=>{
+    const t = consTotals(c.id);
+    const f = getFruit(c.fruitId);
+    return `<tr>
+      <td dir="ltr" style="text-align:right"><b>${esc(c.code)}</b></td>
+      <td>${faDate(c.date)}</td>
+      <td>${esc((getComp(c.companyId)||{}).name||'—')}</td>
+      <td>${esc(fruitLabel(f))}</td>
+      <td>${esc((getTrk(c.truckId)||{}).plate||'—')}</td>
+      <td>${esc((getDrv(c.driverId)||{}).name||'—')}</td>
+      <td>${num(t.baskets)}</td>
+      <td><b>${num(t.weight)}</b></td>
+      <td><span class="badge ${c.status==='ارسال شده'?'b-ok':c.status==='آماده'?'b-info':'b-warn'}">${esc(c.status||'در حال بسته‌بندی')}</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn sm" onclick="pState.cid='${c.id}';go('packing')">📦</button>
+        <button class="btn sm" onclick="editCons('${c.id}')">✏️</button>
+        <button class="btn sm bad" onclick="delCons('${c.id}')">🗑️</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  return `
+  <div class="card neu">
+    <h3>🚛 محموله‌ها <span class="badge b-info">${num(list.length)}</span></h3>
+    <div class="toolbar">
+      <button class="btn primary" onclick="go('consign','new')">＋ محموله جدید</button>
+      <button class="btn" onclick="exportExcel()">⬇️ خروجی اکسل</button>
+    </div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>کد</th><th>تاریخ</th><th>مجموعه</th><th>میوه</th><th>کامیون</th><th>راننده</th><th>سبد</th><th>وزن (kg)</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+        <tbody>${rows || '<tr><td colspan="10" class="empty">محموله‌ای ثبت نشده</td></tr>'}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+function consForm(c){
+  c = c||{};
+  const fruitOpts = DB.fruits.filter(f=>f.active).map(f=>`<option value="${f.id}" ${f.id===c.fruitId?'selected':''}>${esc(fruitLabel(f))}</option>`).join('');
+  const compOpts = options(DB.companies, c.companyId, 'id', x=>x.name, 'انتخاب مجموعه...');
+  const truckOpts = options(DB.trucks, c.truckId, 'id', x=>x.plate+' — '+(x.model||''), 'انتخاب کامیون...');
+  const drvOpts = options(DB.drivers, c.driverId, 'id', x=>x.name, 'انتخاب راننده...');
+  const foreOpts = options(DB.foremen, c.foremanId, 'id', x=>x.name, 'انتخاب سرکارگر...');
+  const statusOpts = ['در حال بسته‌بندی','آماده','ارسال شده'].map(s=>`<option ${s===c.status?'selected':''}>${s}</option>`).join('');
+
+  return `<div class="grid2">
+    <label class="fld"><span>کد محموله</span><input name="code" value="${esc(c.code||('C-'+codeNum()))}" dir="ltr"></label>
+    <label class="fld"><span>تاریخ *</span><input name="date" type="date" value="${c.date||isoToday()}"></label>
+    <label class="fld"><span>مجموعه / باغدار *</span><select name="companyId">${compOpts}</select></label>
+    <label class="fld"><span>میوه *</span><select name="fruitId">${fruitOpts}</select></label>
+    <label class="fld"><span>کامیون</span><select name="truckId">${truckOpts}</select></label>
+    <label class="fld"><span>راننده</span><select name="driverId">${drvOpts}</select></label>
+    <label class="fld"><span>سرکارگر مسئول</span><select name="foremanId">${foreOpts}</select></label>
+    <label class="fld"><span>وضعیت</span><select name="status">${statusOpts}</select></label>
+    <label class="fld"><span>مقصد</span><input name="destination" value="${esc(c.destination||'')}" placeholder="مثلاً بازار تهران"></label>
+    <label class="fld"><span>قیمت هر کیلو (تومان)</span><input name="pricePerKg" type="number" min="0" value="${c.pricePerKg||''}"></label>
+    <label class="fld full"><span>یادداشت</span><textarea name="notes" rows="2">${esc(c.notes||'')}</textarea></label>
+  </div>`;
+}
+
+function vConsignNew(){
+  return `<div class="card neu">
+    <h3>➕ محموله جدید</h3>
+    <div id="consFormBox">${consForm()}</div>
+    <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn primary" onclick="saveConsNew()">💾 ذخیره محموله</button>
+      <button class="btn" onclick="go('consign')">انصراف</button>
+    </div>
+  </div>`;
+}
+function saveConsNew(){
+  const box = $('#consFormBox');
+  const code = $('[name=code]',box).value.trim() || ('C-'+codeNum());
+  const companyId = $('[name=companyId]',box).value;
+  const fruitId = $('[name=fruitId]',box).value;
+  if(!companyId){ toast('مجموعه را انتخاب کنید','bad'); return; }
+  if(!fruitId){ toast('میوه را انتخاب کنید','bad'); return; }
+  const c = {
+    id:uid(), code,
+    date: $('[name=date]',box).value || isoToday(),
+    companyId, fruitId,
+    truckId: $('[name=truckId]',box).value,
+    driverId: $('[name=driverId]',box).value,
+    foremanId: $('[name=foremanId]',box).value,
+    status: $('[name=status]',box).value,
+    destination: $('[name=destination]',box).value.trim(),
+    pricePerKg: +$('[name=pricePerKg]',box).value || 0,
+    notes: $('[name=notes]',box).value.trim(),
+    by: CU.name, at: new Date().toISOString()
+  };
+  DB.consignments.push(c);
+  save();
+  pState.cid = c.id;
+  toast('محموله ساخته شد');
+  go('packing');
+}
+
+function editCons(id){
+  const c = getCons(id); if(!c) return;
+  modal('✏️ ویرایش محموله', consForm(c), m=>{
+    c.code = $('[name=code]',m).value.trim() || c.code;
+    c.date = $('[name=date]',m).value || c.date;
+    c.companyId = $('[name=companyId]',m).value;
+    c.fruitId = $('[name=fruitId]',m).value;
+    c.truckId = $('[name=truckId]',m).value;
+    c.driverId = $('[name=driverId]',m).value;
+    c.foremanId = $('[name=foremanId]',m).value;
+    c.status = $('[name=status]',m).value;
+    c.destination = $('[name=destination]',m).value.trim();
+    c.pricePerKg = +$('[name=pricePerKg]',m).value||0;
+    c.notes = $('[name=notes]',m).value.trim();
+    save(); render(); toast('ویرایش شد');
+  }, 'ذخیره', true);
+}
+function delCons(id){
+  const c = getCons(id); if(!c) return;
+  if(!confirm('محموله «'+c.code+'» و تمام رکوردهای بسته‌بندی آن حذف شود؟')) return;
+  DB.consignments = DB.consignments.filter(x=>x.id!==id);
+  DB.packing = DB.packing.filter(p=>p.consignmentId!==id);
+  save();
+  if(pState.cid===id) pState.cid='';
+  render(); toast('حذف شد','warn');
+}
+
+/* ============================================================
+   11) جمع‌بندی محصولات
+   ============================================================ */
+function vAgg(){
+  const from = pState.dateFrom || '';
+  const to = pState.dateTo || '';
+  const inRange = d => (!from || d>=from) && (!to || d<=to);
+
+  const cons = DB.consignments.filter(c=>inRange(c.date));
+  const consIds = new Set(cons.map(c=>c.id));
+  const rows = DB.packing.filter(p=>consIds.has(p.consignmentId) && inRange(p.date));
+
+  // به تفکیک میوه
+  const byFruit = {};
+  rows.forEach(p=>{
+    const c = getCons(p.consignmentId); if(!c) return;
+    const f = getFruit(c.fruitId);
+    const k = f ? fruitLabel(f) : 'نامشخص';
+    if(!byFruit[k]) byFruit[k] = {baskets:0, fruits:0, weight:0};
+    byFruit[k].baskets += p.baskets;
+    byFruit[k].fruits  += p.baskets*p.fruitsPerBasket;
+    byFruit[k].weight  += p.baskets*p.weightPerBasket;
+  });
+  // به تفکیک کارگر
+  const byWorker = {};
+  rows.forEach(p=>{
+    const w = getWork(p.workerId);
+    const k = w?w.name:'نامشخص';
+    if(!byWorker[k]) byWorker[k] = {baskets:0, fruits:0, weight:0};
+    byWorker[k].baskets += p.baskets;
+    byWorker[k].fruits  += p.baskets*p.fruitsPerBasket;
+    byWorker[k].weight  += p.baskets*p.weightPerBasket;
+  });
+
+  const totB = sum(Object.values(byFruit), x=>x.baskets);
+  const totF = sum(Object.values(byFruit), x=>x.fruits);
+  const totW = sum(Object.values(byFruit), x=>x.weight);
+
+  const fruitRows = Object.entries(byFruit).sort((a,b)=>b[1].weight-a[1].weight).map(([k,v])=>{
+    const avg = v.baskets ? v.weight/v.baskets : 0;
+    return `<tr>
+      <td><b>${esc(k)}</b></td>
+      <td>${num(v.baskets)}</td>
+      <td>${num(v.fruits)}</td>
+      <td><b>${num(v.weight)}</b></td>
+      <td>${num(avg)}</td>
+    </tr>`;
+  }).join('');
+
+  const workerRows = Object.entries(byWorker).sort((a,b)=>b[1].weight-a[1].weight).map(([k,v])=>{
+    return `<tr>
+      <td><b>${esc(k)}</b></td>
+      <td>${num(v.baskets)}</td>
+      <td>${num(v.fruits)}</td>
+      <td><b>${num(v.weight)}</b></td>
+      <td>${totW?num(v.weight/totW*100):0}٪</td>
+    </tr>`;
+  }).join('');
+
+  const chartData = Object.entries(byFruit).map(([label,v])=>({label, value:v.weight})).sort((a,b)=>b.value-a.value);
+
+  return `
+  <div class="card neu">
+    <h3>Σ جمع‌بندی خودکار محصولات</h3>
+    <div class="toolbar">
+      <label class="fld" style="min-width:160px"><span>از تاریخ</span><input type="date" value="${from}" onchange="pState.dateFrom=this.value;render()"></label>
+      <label class="fld" style="min-width:160px"><span>تا تاریخ</span><input type="date" value="${to}" onchange="pState.dateTo=this.value;render()"></label>
+      <button class="btn" onclick="pState.dateFrom='';pState.dateTo='';render()">♻️ حذف فیلتر</button>
+      <button class="btn" onclick="printAgg()">🖨️ پرینت گزارش</button>
+      <button class="btn" onclick="exportExcel()">⬇️ اکسل</button>
+    </div>
+
+    <div class="stats">
+      <div class="stat neu-s"><div class="i">🧺</div><div class="t">مجموع سبدها</div><div class="v">${num(totB)}</div></div>
+      <div class="stat neu-s"><div class="i">🍎</div><div class="t">مجموع میوه‌ها</div><div class="v">${num(totF)}</div></div>
+      <div class="stat neu-s"><div class="i">⚖️</div><div class="t">مجموع وزن (kg)</div><div class="v" style="color:var(--pri)">${num(totW)}</div></div>
+      <div class="stat neu-s"><div class="i">📋</div><div class="t">تعداد محموله</div><div class="v">${num(cons.length)}</div></div>
+    </div>
+  </div>
+
+  <div class="card neu">
+    <h3>🍎 جمع‌بندی به تفکیک میوه</h3>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>میوه</th><th>تعداد سبد</th><th>تعداد میوه</th><th>وزن کل (kg)</th><th>میانگین وزن سبد</th></tr></thead>
+        <tbody>${fruitRows || '<tr><td colspan="5" class="empty">داده‌ای موجود نیست</td></tr>'}</tbody>
+        ${fruitRows?`<tfoot><tr>
+          <td>جمع کل</td><td>${num(totB)}</td><td>${num(totF)}</td><td>${num(totW)}</td><td>${num(totB?totW/totB:0)}</td>
+        </tr></tfoot>`:''}
+      </table>
+    </div>
+  </div>
+
+  <div class="card neu">
+    <h3>👷 عملکرد کارگران</h3>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>کارگر</th><th>سبد</th><th>میوه</th><th>وزن (kg)</th><th>سهم از وزن</th></tr></thead>
+        <tbody>${workerRows || '<tr><td colspan="5" class="empty">داده‌ای موجود نیست</td></tr>'}</tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card neu">
+    <h3>📊 نمودار وزن به تفکیک میوه</h3>
+    ${barChart(chartData,'kg')}
+  </div>`;
+}
+
+/* ============================================================
+   12) قبض باسکول
+   ============================================================ */
+function vWeigh(){
+  const list = DB.weighbridges.slice().reverse();
+  const rows = list.map(w=>{
+    const c = getCons(w.consignmentId);
+    return `<tr>
+      <td dir="ltr" style="text-align:right"><b>${esc(w.code)}</b></td>
+      <td>${faDate(w.date)}</td>
+      <td dir="ltr" style="text-align:right">${esc(w.plate||'—')}</td>
+      <td>${esc((getDrv(w.driverId)||{}).name || w.driverName || '—')}</td>
+      <td>${esc(w.product||'—')}</td>
+      <td>${num(w.gross)}</td>
+      <td>${num(w.tare)}</td>
+      <td><b style="color:var(--pri)">${num(w.net)}</b></td>
+      <td style="white-space:nowrap">
+        <button class="btn sm primary" onclick="printWeigh('${w.id}')">🖨️</button>
+        <button class="btn sm bad" onclick="delWeigh('${w.id}')">🗑️</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  return `
+  <div class="card neu">
+    <h3>⚖️ قبض باسکول</h3>
+    <div class="toolbar">
+      <button class="btn primary" onclick="openWeighNew()">＋ قبض باسکول جدید</button>
+    </div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>کد</th><th>تاریخ</th><th>پلاک</th><th>راننده</th><th>محصول</th><th>وزن خالی (kg)</th><th>وزن فارغ (kg)</th><th>وزن خالص (kg)</th><th>عملیات</th></tr></thead>
+        <tbody>${rows || '<tr><td colspan="9" class="empty">قبضی ثبت نشده</td></tr>'}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+function openWeighNew(){
+  const consOpts = DB.consignments.slice().reverse().map(c=>{
+    const t = consTotals(c.id);
+    return `<option value="${c.id}">${esc(c.code)} — ${esc(fruitLabel(getFruit(c.fruitId)))} — ${num(t.weight)} kg</option>`;
+  }).join('');
+  const html = `<div class="grid2">
+    <label class="fld full"><span>محموله مرتبط (اختیاری)</span>
+      <select name="consignmentId" onchange="wAutoFill(this.value)">
+        <option value="">— بدون ارتباط —</option>${consOpts}
+      </select></label>
+    <label class="fld"><span>شماره قبض</span><input name="code" value="W-${codeNum()}" dir="ltr"></label>
+    <label class="fld"><span>تاریخ</span><input name="date" type="date" value="${isoToday()}"></label>
+    <label class="fld"><span>ساعت</span><input name="time" type="time" value="${new Date().toTimeString().slice(0,5)}"></label>
+    <label class="fld"><span>پلاک خودرو</span><input name="plate" placeholder="78 ع 452 ایران 11"></label>
+    <label class="fld"><span>راننده</span>
+      <select name="driverId">${options(DB.drivers,'','id',x=>x.name,'— انتخاب —')}</select></label>
+    <label class="fld"><span>محصول</span><input name="product" placeholder="مثلاً سیب قرمز"></label>
+    <label class="fld"><span>وزن خالی / فارغ (kg)</span><input name="tare" type="number" min="0" step="0.1" value="" placeholder="بدون بار"></label>
+    <label class="fld"><span>وزن با بار (kg)</span><input name="gross" type="number" min="0" step="0.1" value="" placeholder="با بار"></label>
+    <label class="fld full"><span>یادداشت</span><input name="notes"></label>
+  </div>
+  <div class="hint" style="margin-top:10px">🔎 وزن خالص = وزن با بار − وزن فارغ</div>`;
+
+  const m = modal('⚖️ ثبت قبض باسکول', html, mm=>{
+    const gross = parseFloat($('[name=gross]',mm).value)||0;
+    const tare  = parseFloat($('[name=tare]',mm).value)||0;
+    if(gross<=0){ toast('وزن با بار را وارد کنید','bad'); return false; }
+    if(tare<0 || tare>=gross){ toast('وزن فارغ معتبر نیست','bad'); return false; }
+    const w = {
+      id:uid(),
+      code: $('[name=code]',mm).value.trim() || ('W-'+codeNum()),
+      date: $('[name=date]',mm).value || isoToday(),
+      time: $('[name=time]',mm).value || '',
+      plate: $('[name=plate]',mm).value.trim(),
+      driverId: $('[name=driverId]',mm).value,
+      product: $('[name=product]',mm).value.trim(),
+      consignmentId: $('[name=consignmentId]',mm).value,
+      gross, tare, net: Math.round((gross-tare)*100)/100,
+      notes: $('[name=notes]',mm).value.trim(),
+      by: CU.name
+    };
+    DB.weighbridges.push(w);
+    save(); render();
+    toast('قبض باسکول ثبت شد — وزن خالص: '+num(w.net)+' کیلو','ok');
+  }, 'ثبت', true);
+}
+function wAutoFill(cid){
+  const c = getCons(cid); if(!c) return;
+  const m = document.querySelector('.modal-bg .modal');
+  if(!m) return;
+  const trk = getTrk(c.truckId);
+  const drv = getDrv(c.driverId);
+  const f = getFruit(c.fruitId);
+  if(trk) $('[name=plate]',m).value = trk.plate;
+  if(drv) $('[name=driverId]',m).value = drv.id;
+  if(f) $('[name=product]',m).value = fruitLabel(f);
+}
+function delWeigh(id){
+  if(!confirm('قبض حذف شود؟')) return;
+  DB.weighbridges = DB.weighbridges.filter(x=>x.id!==id);
+  save(); render(); toast('حذف شد','warn');
+}
+
+/* ============================================================
+   13) فاکتورها
+   ============================================================ */
+let invDraft = null;
+
+function vInvoices(){
+  if(state.sub==='new') return vInvoiceNew();
+
+  const list = DB.invoices.slice().reverse();
+  const rows = list.map(inv=>`
+    <tr>
+      <td dir="ltr" style="text-align:right"><b>${esc(inv.code)}</b></td>
+      <td>${faDate(inv.date)}</td>
+      <td>${esc(inv.customerName)}</td>
+      <td>${num(inv.items.length)}</td>
+      <td>${num(sum(inv.items, x=>x.weight))} kg</td>
+      <td><b>${money(inv.total)}</b></td>
+      <td style="white-space:nowrap">
+        <button class="btn sm primary" onclick="printInvoice('${inv.id}')">🖨️</button>
+        <button class="btn sm bad" onclick="delInvoice('${inv.id}')">🗑️</button>
+      </td>
+    </tr>
+  `).join('');
+
+  return `
+  <div class="card neu">
+    <h3>🧾 فاکتورهای فروش <span class="badge b-info">${num(list.length)}</span></h3>
+    <div class="toolbar">
+      <button class="btn primary" onclick="startInvoice()">＋ فاکتور جدید</button>
+      <button class="btn" onclick="startInvoiceFromCons()">🚛 از روی محموله</button>
+    </div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>شماره</th><th>تاریخ</th><th>خریدار</th><th>اقلام</th><th>وزن</th><th>مبلغ کل (تومان)</th><th>عملیات</th></tr></thead>
+        <tbody>${rows || '<tr><td colspan="7" class="empty">فاکتوری ثبت نشده</td></tr>'}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+function startInvoice(){
+  invDraft = { customerId:'', customerName:'', date: isoToday(), items:[], discount:0, tax:0, notes:'', consignmentId:'' };
+  go('invoice','new');
+}
+function startInvoiceFromCons(){
+  const consOpts = DB.consignments.slice().reverse().map(c=>{
+    const t = consTotals(c.id);
+    return `<option value="${c.id}">${esc(c.code)} — ${esc(fruitLabel(getFruit(c.fruitId)))} — ${num(t.weight)} kg</option>`;
+  }).join('');
+  const m = modal('🚛 ساخت فاکتور از محموله',
+    `<div class="grid2">
+      <label class="fld full"><span>انتخاب محموله</span>
+        <select name="cid" id="fromConsSel">${consOpts || '<option value="">— محموله‌ای نیست —</option>'}</select></label>
+      <label class="fld full"><span>خریدار</span>
+        <select name="cust" id="fromConsCust">
+          <option value="">— انتخاب خریدار —</option>
+          ${DB.customers.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}
+        </select></label>
+    </div>`, m2=>{
+      const cid = $('#fromConsSel',m2).value;
+      const c = getCons(cid);
+      if(!c){ toast('محموله را انتخاب کنید','bad'); return false; }
+      const t = consTotals(cid);
+      if(t.weight<=0){ toast('این محموله وزنی ندارد','bad'); return false; }
+      const f = getFruit(c.fruitId);
+      const custId = $('#fromConsCust',m2).value;
+      const cust = getCust(custId);
+      invDraft = {
+        customerId: custId,
+        customerName: cust?cust.name:'',
+        date: isoToday(),
+        items:[{ fruitId: c.fruitId, fruitName: fruitLabel(f), weight: t.weight, pricePerKg: c.pricePerKg || (f?f.pricePerKg:0) }],
+        discount:0, tax:0, notes:'', consignmentId: cid
+      };
+      go('invoice','new');
+    }, 'ادامه');
+}
+
+function vInvoiceNew(){
+  if(!invDraft) startInvoice();
+  const d = invDraft;
+  const fruitOpts = DB.fruits.filter(f=>f.active).map(f=>`<option value="${f.id}">${esc(fruitLabel(f))}</option>`).join('');
+  const custOpts = options(DB.customers, d.customerId, 'id', x=>x.name, '— خریدار جدید —');
+
+  const subTotal = sum(d.items, x=>x.weight*x.pricePerKg);
+  const afterDisc = Math.max(0, subTotal - (+d.discount||0));
+  const taxAmt = Math.round(afterDisc * ((+d.tax||0)/100));
+  const total = afterDisc + taxAmt;
+
+  const itemRows = d.items.map((it,i)=>`
+    <tr>
+      <td>${i+1}</td>
+      <td>${esc(it.fruitName)}</td>
+      <td>${num(it.weight)} kg</td>
+      <td>${money(it.pricePerKg)}</td>
+      <td><b>${money(it.weight*it.pricePerKg)}</b></td>
+      <td><button class="btn sm bad" onclick="invDelItem(${i})">✕</button></td>
+    </tr>
+  `).join('');
+
+  return `
+  <div class="card neu">
+    <h3>🧾 فاکتور جدید</h3>
+    <div class="grid3">
+      <label class="fld"><span>خریدار</span>
+        <select onchange="invDraft.customerId=this.value;const o=this.selectedOptions[0];invDraft.customerName=this.value?o.textContent:'';render()">${custOpts}</select></label>
+      <label class="fld"><span>تاریخ</span>
+        <input type="date" value="${d.date}" onchange="invDraft.date=this.value"></label>
+      <label class="fld"><span>نام خریدار (دستی)</span>
+        <input value="${esc(d.customerName)}" onchange="invDraft.customerName=this.value" placeholder="اگر در لیست نیست"></label>
+    </div>
+
+    <h4>➕ افزودن قلم</h4>
+    <div class="grid4" style="margin-bottom:12px">
+      <label class="fld"><span>میوه</span><select id="ivFruit">${fruitOpts}</select></label>
+      <label class="fld"><span>وزن (کیلو)</span><input id="ivWeight" type="number" min="0" step="0.1" value=""></label>
+      <label class="fld"><span>قیمت هر کیلو</span><input id="ivPrice" type="number" min="0" value=""></label>
+      <label class="fld"><span>&nbsp;</span><button class="btn primary" onclick="invAddItem()">＋ افزودن</button></label>
+    </div>
+
+    <div class="tbl-wrap" style="margin-bottom:16px">
+      <table class="tbl">
+        <thead><tr><th>#</th><th>میوه</th><th>وزن</th><th>قیمت واحد</th><th>مبلغ</th><th></th></tr></thead>
+        <tbody>${itemRows || '<tr><td colspan="6" class="empty">قلمی اضافه نشده</td></tr>'}</tbody>
+        ${d.items.length?`<tfoot><tr><td colspan="4">جمع اقلام</td><td>${money(subTotal)}</td><td></td></tr></tfoot>`:''}
+      </table>
+    </div>
+
+    <div class="grid3">
+      <label class="fld"><span>تخفیف (تومان)</span>
+        <input type="number" min="0" value="${d.discount||0}" onchange="invDraft.discount=+this.value||0;render()"></label>
+      <label class="fld"><span>مالیات (٪)</span>
+        <input type="number" min="0" max="100" value="${d.tax||0}" onchange="invDraft.tax=+this.value||0;render()"></label>
+      <label class="fld"><span>مبلغ نهایی</span>
+        <input value="${money(total)}" disabled></label>
+      <label class="fld full"><span>توضیحات</span>
+        <input value="${esc(d.notes)}" onchange="invDraft.notes=this.value"></label>
+    </div>
+
+    <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn primary" onclick="saveInvoice()">💾 ذخیره فاکتور</button>
+      <button class="btn ok" onclick="saveInvoice(true)">💾 ذخیره و پرینت</button>
+      <button class="btn" onclick="invDraft=null;go('invoice')">انصراف</button>
+    </div>
+  </div>`;
+}
+
+function invAddItem(){
+  const fid = $('#ivFruit').value;
+  const w = parseFloat($('#ivWeight').value)||0;
+  let price = parseFloat($('#ivPrice').value)||0;
+  if(!fid){ toast('میوه را انتخاب کنید','bad'); return; }
+  if(w<=0){ toast('وزن معتبر نیست','bad'); return; }
+  const f = getFruit(fid);
+  if(!price && f) price = f.pricePerKg||0;
+  invDraft.items.push({ fruitId:fid, fruitName: fruitLabel(f), weight:w, pricePerKg:price });
+  render();
+}
+function invDelItem(i){ invDraft.items.splice(i,1); render(); }
+
+function saveInvoice(andPrint){
+  const d = invDraft;
+  if(!d.items.length){ toast('حداقل یک قلم اضافه کنید','bad'); return; }
+  if(!d.customerName.trim()){ toast('نام خریدار الزامی است','bad'); return; }
+  const subTotal = sum(d.items, x=>x.weight*x.pricePerKg);
+  const afterDisc = Math.max(0, subTotal - (+d.discount||0));
+  const taxAmt = Math.round(afterDisc * ((+d.tax||0)/100));
+  const total = afterDisc + taxAmt;
+  const code = 'INV-' + d.date.replace(/-/g,'') + '-' + codeNum();
+
+  const inv = {
+    id: uid(), code, date: d.date,
+    customerId: d.customerId, customerName: d.customerName,
+    items: JSON.parse(JSON.stringify(d.items)),
+    subTotal, discount:+d.discount||0, taxPercent:+d.tax||0, taxAmount: taxAmt, total,
+    notes: d.notes, consignmentId: d.consignmentId||'',
+    by: CU.name, at: new Date().toISOString()
+  };
+  DB.invoices.push(inv);
+  save();
+  invDraft = null;
+  toast('فاکتور ذخیره شد ✓');
+  if(andPrint){ printInvoice(inv.id); go('invoice'); }
+  else go('invoice');
+}
+
+function delInvoice(id){
+  if(!confirm('فاکتور حذف شود؟')) return;
+  DB.invoices = DB.invoices.filter(x=>x.id!==id);
+  save(); render(); toast('حذف شد','warn');
+}
+
+/* ============================================================
+   14) پرینت — فاکتور
+   ============================================================ */
+function buildInvoiceDoc(inv){
+  const s = DB.settings;
+  const maxW = Math.max(...inv.items.map(i=>i.weight),1);
+  const chartRows = inv.items.map(i=>`
+    <div class="prow">
+      <span>${esc(i.fruitName)}</span>
+      <div class="pt"><i style="width:${Math.max(3,(i.weight/maxW)*100)}%"></i></div>
+      <span class="pv">${num(i.weight)} kg</span>
+    </div>`).join('');
+
+  const itemRows = inv.items.map((it,i)=>`
+    <tr>
+      <td>${toFa(i+1)}</td>
+      <td class="r">${esc(it.fruitName)}</td>
+      <td>${num(it.weight)}</td>
+      <td>${money(it.pricePerKg)}</td>
+      <td>${money(it.weight*it.pricePerKg)}</td>
+    </tr>`).join('');
+
+  return `
+  <div class="doc-a4">
+    <div class="dh">
+      <div class="brandbox">
+        <div class="logo">🍎</div>
+        <div>
+          <h1>${esc(s.company||'')}</h1>
+          <div class="sub">${esc(s.address||'')}</div>
+          <div class="sub">تلفن: ${esc(s.phone||'')} &nbsp;|&nbsp; کد اقتصادی: ${esc(s.economicCode||'—')}</div>
+        </div>
+      </div>
+      <div class="meta">
+        <div>شماره فاکتور: <b dir="ltr">${esc(inv.code)}</b></div>
+        <div>تاریخ: <b>${faDate(inv.date)}</b></div>
+        <div>ساعت: ${new Date().toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'})}</div>
+      </div>
+    </div>
+
+    <div class="doc-title">فاکتور فروش کالا</div>
+
+    <div class="parties">
+      <div class="pbox">
+        <b>خریدار</b>
+        نام: ${esc(inv.customerName)}<br>
+        تلفن: ${esc((getCust(inv.customerId)||{}).phone || '—')}<br>
+        آدرس: ${esc((getCust(inv.customerId)||{}).address || '—')}
+      </div>
+      <div class="pbox">
+        <b>فروشنده</b>
+        نام: ${esc(s.company||'')}<br>
+        شناسه ملی: ${esc(s.nationalId||'—')}<br>
+        شرایط: نقدی
+      </div>
+    </div>
+
+    <table class="dt">
+      <thead>
+        <tr>
+          <th style="width:8%">ردیف</th>
+          <th style="width:36%">شرح کالا</th>
+          <th style="width:14%">وزن (کیلو)</th>
+          <th style="width:18%">قیمت واحد (تومان)</th>
+          <th style="width:24%">مبلغ کل (تومان)</th>
+        </tr>
+      </thead>
+      <tbody>${itemRows}</tbody>
+      <tfoot>
+        <tr>
+          <td colspan="2">جمع</td>
+          <td>${num(sum(inv.items,x=>x.weight))}</td>
+          <td>—</td>
+          <td>${money(inv.subTotal)}</td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <div class="chartbox">
+      <div class="ct">📊 نمودار توزیع وزن اقلام فاکتور (کیلوگرم)</div>
+      <div class="pchart">${chartRows}</div>
+    </div>
+
+    <div class="totbox">
+      <table>
+        <tr><td>جمع اقلام</td><td dir="ltr">${money(inv.subTotal)} تومان</td></tr>
+        <tr><td>تخفیف</td><td dir="ltr">${money(inv.discount)} تومان</td></tr>
+        <tr><td>مالیات (${toFa(inv.taxPercent||0)}٪)</td><td dir="ltr">${money(inv.taxAmount)} تومان</td></tr>
+        <tr class="grand"><td>مبلغ قابل پرداخت</td><td dir="ltr">${money(inv.total)} تومان</td></tr>
+      </table>
+    </div>
+
+    <div class="inwords">
+      <b>مبلغ به حروف:</b> ${toWords(inv.total)} تومان
+    </div>
+
+    ${inv.notes?`<div class="inwords"><b>توضیحات:</b> ${esc(inv.notes)}</div>`:''}
+
+    <div class="signs">
+      <div class="s">امضای فروشنده</div>
+      <div class="s">امضای تحویل‌گیرنده</div>
+      <div class="s">مهر و امضای خریدار</div>
+    </div>
+
+    <div class="foot">
+      <span>${esc(s.footerNote||'')}</span>
+      <span dir="ltr">${esc(s.bank||'')}</span>
+    </div>
+  </div>`;
+}
+
+/* ============================================================
+   15) پرینت — قبض باسکول
+   ============================================================ */
+function buildWeighDoc(w){
+  const s = DB.settings;
+  const c = getCons(w.consignmentId);
+  const t = c ? consTotals(c.id) : null;
+  return `
+  <div class="doc-a4">
+    <div class="dh">
+      <div class="brandbox">
+        <div class="logo">⚖️</div>
+        <div>
+          <h1>${esc(s.company||'')}</h1>
+          <div class="sub">${esc(s.address||'')}</div>
+          <div class="sub">تلفن: ${esc(s.phone||'')}</div>
+        </div>
+      </div>
+      <div class="meta">
+        <div>شماره قبض: <b dir="ltr">${esc(w.code)}</b></div>
+        <div>تاریخ: <b>${faDate(w.date)}</b></div>
+        <div>ساعت: <b dir="ltr">${esc(w.time||'—')}</b></div>
+      </div>
+    </div>
+
+    <div class="doc-title">قبض باسکول</div>
+
+    <div class="ticket">
+      <div class="kv">
+        <div><span>پلاک خودرو:</span><b dir="ltr">${esc(w.plate||'—')}</b></div>
+        <div><span>راننده:</span><b>${esc((getDrv(w.driverId)||{}).name||'—')}</b></div>
+        <div><span>نوع محصول:</span><b>${esc(w.product||'—')}</b></div>
+        <div><span>محموله:</span><b dir="ltr">${esc(c?c.code:'—')}</b></div>
+        <div><span>مبدأ:</span><b>${esc(c?(getComp(c.companyId)||{}).name:'—')}</b></div>
+        <div><span>مقصد:</span><b>${esc(c?c.destination||'—':'—')}</b></div>
+      </div>
+
+      <div class="bigrow">
+        <div class="big"><small>وزن خالی</small><b>${num(w.tare)}</b><span>کیلوگرم</span></div>
+        <div class="big"><small>وزن با بار</small><b>${num(w.gross)}</b><span>کیلوگرم</span></div>
+        <div class="big" style="background:#ffedd5;border-color:#ea580c">
+          <small>وزن خالص</small><b style="font-size:23px">${num(w.net)}</b><span>کیلوگرم</span>
+        </div>
+      </div>
+
+      ${t?`<div class="kv" style="margin-top:6px">
+        <div><span>مجموع سبدهای محموله:</span><b>${num(t.baskets)}</b></div>
+        <div><span>مجموع میوه‌ها:</span><b>${num(t.fruits)}</b></div>
+        <div><span>مجموع وزن بسته‌بندی:</span><b>${num(t.weight)} kg</b></div>
+        <div><span>اختلاف باسکول با بسته‌بندی:</span><b>${num(Math.round((w.net - t.weight)*100)/100)} kg</b></div>
+      </div>`:''}
+    </div>
+
+    ${t?`<div class="chartbox">
+      <div class="ct">📊 سهم کارگران از وزن بسته‌بندی این محموله</div>
+      <div class="pchart">
+        ${(()=>{
+          const rows = packingOf(c.id);
+          const byW = {};
+          rows.forEach(p=>{ const w2=getWork(p.workerId); const k=w2?w2.name:'—'; byW[k]=(byW[k]||0)+p.baskets*p.weightPerBasket; });
+          const max = Math.max(...Object.values(byW),1);
+          return Object.entries(byW).map(([k,v])=>`
+            <div class="prow">
+              <span>${esc(k)}</span>
+              <div class="pt"><i style="width:${Math.max(3,(v/max)*100)}%"></i></div>
+              <span class="pv">${num(v)} kg</span>
+            </div>`).join('');
+        })()}
+      </div>
+    </div>`:''}
+
+    ${w.notes?`<div class="inwords"><b>یادداشت:</b> ${esc(w.notes)}</div>`:''}
+
+    <div class="signs">
+      <div class="s">امضای مسئول باسکول</div>
+      <div class="s">امضای راننده</div>
+      <div class="s">مهر و امضای شرکت</div>
+    </div>
+
+    <div class="stamp">تأیید<br>${esc(s.brand||'')}</div>
+
+    <div class="foot">
+      <span>${esc(s.footerNote||'')}</span>
+      <span>این قبض در دو نسخه صادر شده است.</span>
+    </div>
+  </div>`;
+}
+
+function printDoc(html){
+  const ps = $('#printSheet');
+  ps.innerHTML = html;
+  setTimeout(()=>window.print(), 80);
+}
+function printInvoice(id){
+  const inv = DB.invoices.find(x=>x.id===id); if(!inv) return;
+  printDoc(buildInvoiceDoc(inv));
+}
+function printWeigh(id){
+  const w = DB.weighbridges.find(x=>x.id===id); if(!w) return;
+  printDoc(buildWeighDoc(w));
+}
+function printAgg(){
+  const from = pState.dateFrom||'', to = pState.dateTo||'';
+  const inRange = d => (!from||d>=from)&&(!to||d<=to);
+  const consIds = new Set(DB.consignments.filter(c=>inRange(c.date)).map(c=>c.id));
+  const rows = DB.packing.filter(p=>consIds.has(p.consignmentId)&&inRange(p.date));
+  const byFruit = {};
+  rows.forEach(p=>{
+    const c = getCons(p.consignmentId); if(!c) return;
+    const f = getFruit(c.fruitId); const k = f?fruitLabel(f):'—';
+    if(!byFruit[k]) byFruit[k]={baskets:0,fruits:0,weight:0};
+    byFruit[k].baskets+=p.baskets;
+    byFruit[k].fruits+=p.baskets*p.fruitsPerBasket;
+    byFruit[k].weight+=p.baskets*p.weightPerBasket;
+  });
+  const totB=sum(Object.values(byFruit),x=>x.baskets);
+  const totF=sum(Object.values(byFruit),x=>x.fruits);
+  const totW=sum(Object.values(byFruit),x=>x.weight);
+  const max = Math.max(...Object.values(byFruit).map(x=>x.weight),1);
+  const s = DB.settings;
+
+  printDoc(`
+  <div class="doc-a4">
+    <div class="dh">
+      <div class="brandbox"><div class="logo">Σ</div>
+        <div><h1>${esc(s.company)}</h1><div class="sub">${esc(s.address)}</div></div></div>
+      <div class="meta">
+        <div>تاریخ چاپ: <b>${faDate(isoToday())}</b></div>
+        <div>بازه: ${from?faDate(from):'ابتدا'} تا ${to?faDate(to):'اکنون'}</div>
+      </div>
+    </div>
+    <div class="doc-title">گزارش جمع‌بندی محصولات</div>
+
+    <div class="parties">
+      <div class="pbox"><b>خلاصه</b>
+        مجموع سبدها: <b>${num(totB)}</b><br>
+        مجموع میوه‌ها: <b>${num(totF)}</b><br>
+        مجموع وزن: <b>${num(totW)} کیلوگرم</b>
+      </div>
+      <div class="pbox"><b>مشخصات</b>
+        تعداد محموله: <b>${num(consIds.size)}</b><br>
+        تعداد رکورد: <b>${num(rows.length)}</b><br>
+        میانگین وزن سبد: <b>${num(totB?totW/totB:0)} kg</b>
+      </div>
+    </div>
+
+    <table class="dt">
+      <thead><tr><th>میوه</th><th>تعداد سبد</th><th>تعداد میوه</th><th>وزن کل (kg)</th><th>میانگین وزن سبد</th></tr></thead>
+      <tbody>${Object.entries(byFruit).sort((a,b)=>b[1].weight-a[1].weight).map(([k,v])=>`
+        <tr>
+          <td class="r">${esc(k)}</td>
+          <td>${num(v.baskets)}</td>
+          <td>${num(v.fruits)}</td>
+          <td>${num(v.weight)}</td>
+          <td>${num(v.baskets?v.weight/v.baskets:0)}</td>
+        </tr>`).join('')}</tbody>
+      <tfoot><tr>
+        <td>جمع کل</td><td>${num(totB)}</td><td>${num(totF)}</td><td>${num(totW)}</td><td>${num(totB?totW/totB:0)}</td>
+      </tr></tfoot>
+    </table>
+
+    <div class="chartbox">
+      <div class="ct">📊 نمودار وزن به تفکیک میوه</div>
+      <div class="pchart">
+        ${Object.entries(byFruit).sort((a,b)=>b[1].weight-a[1].weight).map(([k,v])=>`
+          <div class="prow"><span>${esc(k)}</span>
+            <div class="pt"><i style="width:${Math.max(3,(v.weight/max)*100)}%"></i></div>
+            <span class="pv">${num(v.weight)} kg</span></div>`).join('')}
+      </div>
+    </div>
+
+    <div class="signs">
+      <div class="s">سرکارگر</div>
+      <div class="s">انباردار</div>
+      <div class="s">مدیرعامل</div>
+    </div>
+    <div class="foot"><span>${esc(s.footerNote)}</span><span>${esc(s.company)}</span></div>
+  </div>`);
+}
+
+/* ============================================================
+   16) گزارش‌ها
+   ============================================================ */
+function vReports(){
+  const byFruit = {};
+  DB.packing.forEach(p=>{
+    const c = getCons(p.consignmentId); if(!c) return;
+    const f = getFruit(c.fruitId); const k = f?fruitLabel(f):'—';
+    byFruit[k]=(byFruit[k]||0)+p.baskets*p.weightPerBasket;
+  });
+  const byCompany = {};
+  DB.packing.forEach(p=>{
+    const c = getCons(p.consignmentId); if(!c) return;
+    const co = getComp(c.companyId); const k = co?co.name:'—';
+    byCompany[k]=(byCompany[k]||0)+p.baskets*p.weightPerBasket;
+  });
+  const byWorker = {};
+  DB.packing.forEach(p=>{
+    const w = getWork(p.workerId); const k = w?w.name:'—';
+    if(!byWorker[k]) byWorker[k]={baskets:0,weight:0};
+    byWorker[k].baskets += p.baskets;
+    byWorker[k].weight += p.baskets*p.weightPerBasket;
+  });
+
+  const sales = sum(DB.invoices, i=>i.total);
+  const totalW = sum(DB.packing, p=>p.baskets*p.weightPerBasket);
+
+  return `
+  <div class="stats">
+    <div class="stat neu"><div class="i">💰</div><div class="t">مجموع فروش</div><div class="v" style="font-size:1.05rem;color:var(--ok)">${money(sales)}</div></div>
+    <div class="stat neu"><div class="i">⚖️</div><div class="t">مجموع وزن</div><div class="v">${num(totalW)}</div></div>
+    <div class="stat neu"><div class="i">🧾</div><div class="t">تعداد فاکتور</div><div class="v">${num(DB.invoices.length)}</div></div>
+    <div class="stat neu"><div class="i">🚛</div><div class="t">تعداد محموله</div><div class="v">${num(DB.consignments.length)}</div></div>
+  </div>
+
+  <div class="grid2" style="display:grid;grid-template-columns:1.2fr 1fr;gap:20px">
+    <div class="card neu" style="margin:0">
+      <h3>🍎 وزن به تفکیک میوه</h3>
+      ${barChart(Object.entries(byFruit).map(([label,value])=>({label,value})).sort((a,b)=>b.value-a.value),'kg')}
+    </div>
+    <div class="card neu" style="margin:0">
+      <h3>🏢 سهم مجموعه‌ها</h3>
+      ${donutChart(Object.entries(byCompany).map(([label,value])=>({label,value})).sort((a,b)=>b.value-a.value))}
+    </div>
+  </div>
+
+  <div class="card neu">
+    <h3>👷 عملکرد کارگران</h3>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>کارگر</th><th>سبد</th><th>وزن (kg)</th><th>سهم از وزن</th></tr></thead>
+        <tbody>${Object.entries(byWorker).sort((a,b)=>b[1].weight-a[1].weight).map(([k,v])=>`
+          <tr><td><b>${esc(k)}</b></td><td>${num(v.baskets)}</td><td><b>${num(v.weight)}</b></td>
+          <td style="min-width:130px"><div class="bar-track"><i style="width:${totalW?Math.max(2,(v.weight/totalW)*100):0}%"></i></div></td></tr>
+        `).join('') || '<tr><td colspan="4" class="empty">داده‌ای موجود نیست</td></tr>'}</tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card neu">
+    <h3>⬇️ خروجی گرفتن</h3>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn primary" onclick="exportExcel()">📊 خروجی کامل اکسل</button>
+      <button class="btn" onclick="exportJSON()">🗄️ پشتیبان JSON</button>
+    </div>
+  </div>`;
+}
+
+/* ============================================================
+   17) کارگران / میوه‌ها / مجموعه‌ها / خریداران / رانندگان / کامیون‌ها
+   ============================================================ */
+function vWorkers(){
+  const rows = DB.workers.map(w=>{
+    const rowsPk = DB.packing.filter(p=>p.workerId===w.id);
+    const baskets = sum(rowsPk, p=>p.baskets);
+    const weight = sum(rowsPk, p=>p.baskets*p.weightPerBasket);
+    return `<tr>
+      <td><b>${esc(w.name)}</b></td>
+      <td dir="ltr" style="text-align:right">${esc(w.code||'—')}</td>
+      <td dir="ltr" style="text-align:right">${esc(w.phone||'—')}</td>
+      <td>${num(w.dailyWage||0)}</td>
+      <td>${num(baskets)}</td>
+      <td><b>${num(weight)}</b></td>
+      <td><span class="badge ${w.active?'b-ok':'b-mut'}">${w.active?'فعال':'غیرفعال'}</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn sm" onclick="editWorker('${w.id}')">✏️</button>
+        <button class="btn sm bad" onclick="delWorker('${w.id}')">🗑️</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  return `
+  <div class="card neu">
+    <h3>👷 کارگران <span class="badge b-info">${num(DB.workers.length)}</span></h3>
+    <div class="toolbar"><button class="btn primary" onclick="addWorker()">＋ کارگر جدید</button></div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>نام</th><th>کد</th><th>تلفن</th><th>دستمزد روزانه</th><th>سبد بسته‌بندی</th><th>وزن کل (kg)</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+        <tbody>${rows || '<tr><td colspan="8" class="empty">کارگری ثبت نشده</td></tr>'}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+function workerForm(w){
+  w = w||{};
+  return `<div class="grid2">
+    <label class="fld"><span>نام و نام خانوادگی *</span><input name="name" value="${esc(w.name||'')}"></label>
+    <label class="fld"><span>کد کارگر</span><input name="code" value="${esc(w.code||'')}" dir="ltr"></label>
+    <label class="fld"><span>تلفن</span><input name="phone" value="${esc(w.phone||'')}" dir="ltr"></label>
+    <label class="fld"><span>دستمزد روزانه (تومان)</span><input name="dailyWage" type="number" min="0" value="${w.dailyWage||0}"></label>
+    <label class="fld"><span>وضعیت</span><select name="active"><option value="1" ${w.active!==false?'selected':''}>فعال</option><option value="0" ${w.active===false?'selected':''}>غیرفعال</option></select></label>
+  </div>`;
+}
+function addWorker(){
+  modal('＋ کارگر جدید', workerForm(), m=>{
+    const name = $('[name=name]',m).value.trim();
+    if(!name){ toast('نام الزامی','bad'); return false; }
+    DB.workers.push({id:uid(), name, code:$('[name=code]',m).value.trim(), phone:$('[name=phone]',m).value.trim(),
+      dailyWage:+$('[name=dailyWage]',m).value||0, active:$('[name=active]',m).value==='1'});
+    save(); render(); toast('ثبت شد');
+  });
+}
+function editWorker(id){
+  const w = DB.workers.find(x=>x.id===id); if(!w) return;
+  modal('✏️ ویرایش کارگر', workerForm(w), m=>{
+    w.name = $('[name=name]',m).value.trim()||w.name;
+    w.code = $('[name=code]',m).value.trim();
+    w.phone = $('[name=phone]',m).value.trim();
+    w.dailyWage = +$('[name=dailyWage]',m).value||0;
+    w.active = $('[name=active]',m).value==='1';
+    save(); render(); toast('ویرایش شد');
+  });
+}
+function delWorker(id){
+  if(DB.packing.some(p=>p.workerId===id)){ if(!confirm('این کارگر رکورد بسته‌بندی دارد. حذف شود؟')) return; }
+  else if(!confirm('حذف شود؟')) return;
+  DB.workers = DB.workers.filter(x=>x.id!==id);
+  save(); render(); toast('حذف شد','warn');
+}
+
+/* ---- میوه‌ها ---- */
+function vFruits(){
+  const rows = DB.fruits.map(f=>{
+    const w = sum(DB.packing.filter(p=>{ const c=getCons(p.consignmentId); return c&&c.fruitId===f.id; }), p=>p.baskets*p.weightPerBasket);
+    return `<tr>
+      <td><b>${esc(f.name)}</b></td>
+      <td>${esc(f.variety||'—')}</td>
+      <td>${money(f.pricePerKg)}</td>
+      <td>${num(f.basketWeight||0)}</td>
+      <td>${num(w)}</td>
+      <td><span class="badge ${f.active?'b-ok':'b-mut'}">${f.active?'فعال':'غیرفعال'}</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn sm" onclick="editFruit('${f.id}')">✏️</button>
+        <button class="btn sm bad" onclick="delFruit('${f.id}')">🗑️</button>
+      </td>
+    </tr>`;
+  }).join('');
+  return `
+  <div class="card neu">
+    <h3>🍎 انواع میوه و قیمت‌ها</h3>
+    <div class="toolbar"><button class="btn primary" onclick="addFruit()">＋ میوه جدید</button></div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>نام</th><th>رقم</th><th>قیمت هر کیلو</th><th>وزن پیش‌فرض سبد</th><th>وزن بسته‌بندی‌شده</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+        <tbody>${rows || '<tr><td colspan="7" class="empty">میوه‌ای ثبت نشده</td></tr>'}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+function fruitForm(f){
+  f = f||{};
+  return `<div class="grid2">
+    <label class="fld"><span>نام میوه *</span><input name="name" value="${esc(f.name||'')}"></label>
+    <label class="fld"><span>رقم / واریته</span><input name="variety" value="${esc(f.variety||'')}"></label>
+    <label class="fld"><span>قیمت هر کیلو (تومان)</span><input name="pricePerKg" type="number" min="0" value="${f.pricePerKg||0}"></label>
+    <label class="fld"><span>وزن پیش‌فرض هر سبد (kg)</span><input name="basketWeight" type="number" min="0" step="0.1" value="${f.basketWeight||0}"></label>
+    <label class="fld"><span>وضعیت</span><select name="active"><option value="1" ${f.active!==false?'selected':''}>فعال</option><option value="0" ${f.active===false?'selected':''}>غیرفعال</option></select></label>
+  </div>`;
+}
+function addFruit(){
+  modal('＋ میوه جدید', fruitForm(), m=>{
+    const name = $('[name=name]',m).value.trim();
+    if(!name){ toast('نام الزامی','bad'); return false; }
+    DB.fruits.push({id:uid(), name, variety:$('[name=variety]',m).value.trim(),
+      pricePerKg:+$('[name=pricePerKg]',m).value||0,
+      basketWeight:+$('[name=basketWeight]',m).value||0,
+      active:$('[name=active]',m).value==='1'});
+    save(); render(); toast('ثبت شد');
+  });
+}
+function editFruit(id){
+  const f = DB.fruits.find(x=>x.id===id); if(!f) return;
+  modal('✏️ ویرایش میوه', fruitForm(f), m=>{
+    f.name = $('[name=name]',m).value.trim()||f.name;
+    f.variety = $('[name=variety]',m).value.trim();
+    f.pricePerKg = +$('[name=pricePerKg]',m).value||0;
+    f.basketWeight = +$('[name=basketWeight]',m).value||0;
+    f.active = $('[name=active]',m).value==='1';
+    save(); render(); toast('ویرایش شد');
+  });
+}
+function delFruit(id){
+  if(!confirm('حذف شود؟')) return;
+  DB.fruits = DB.fruits.filter(x=>x.id!==id);
+  save(); render(); toast('حذف شد','warn');
+}
+
+/* ---- مجموعه‌ها ---- */
+function simpleListCard(title, list, cols, renderRow, addFn, editFn, delFn, addLabel){
+  const rows = list.map(x=>renderRow(x)).join('');
+  return `<div class="card neu">
+    <h3>${title} <span class="badge b-info">${num(list.length)}</span></h3>
+    <div class="toolbar"><button class="btn primary" onclick="${addFn}()">＋ ${addLabel}</button></div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}<th>عملیات</th></tr></thead>
+        <tbody>${rows || `<tr><td colspan="${cols.length+1}" class="empty">موردی ثبت نشده</td></tr>`}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+function vCompanies(){
+  return simpleListCard('🏢 مجموعه‌ها / باغداران', DB.companies,
+    ['نام','مالک','تلفن','آدرس','وضعیت'],
+    c=>`<tr>
+      <td><b>${esc(c.name)}</b></td>
+      <td>${esc(c.owner||'—')}</td>
+      <td dir="ltr" style="text-align:right">${esc(c.phone||'—')}</td>
+      <td>${esc(c.address||'—')}</td>
+      <td><span class="badge ${c.active?'b-ok':'b-mut'}">${c.active?'فعال':'غیرفعال'}</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn sm" onclick="editCompany('${c.id}')">✏️</button>
+        <button class="btn sm bad" onclick="delCompany('${c.id}')">🗑️</button>
+      </td></tr>`,
+    'addCompany','editCompany','delCompany','مجموعه جدید');
+}
+function companyForm(c){
+  c = c||{};
+  return `<div class="grid2">
+    <label class="fld"><span>نام مجموعه *</span><input name="name" value="${esc(c.name||'')}"></label>
+    <label class="fld"><span>مالک / مسئول</span><input name="owner" value="${esc(c.owner||'')}"></label>
+    <label class="fld"><span>تلفن</span><input name="phone" value="${esc(c.phone||'')}" dir="ltr"></label>
+    <label class="fld"><span>آدرس</span><input name="address" value="${esc(c.address||'')}"></label>
+    <label class="fld"><span>وضعیت</span><select name="active"><option value="1" ${c.active!==false?'selected':''}>فعال</option><option value="0" ${c.active===false?'selected':''}>غیرفعال</option></select></label>
+  </div>`;
+}
+function addCompany(){
+  modal('＋ مجموعه جدید', companyForm(), m=>{
+    const name = $('[name=name]',m).value.trim();
+    if(!name){ toast('نام الزامی','bad'); return false; }
+    DB.companies.push({id:uid(), name, owner:$('[name=owner]',m).value.trim(),
+      phone:$('[name=phone]',m).value.trim(), address:$('[name=address]',m).value.trim(),
+      active:$('[name=active]',m).value==='1'});
+    save(); render(); toast('ثبت شد');
+  });
+}
+function editCompany(id){
+  const c = DB.companies.find(x=>x.id===id); if(!c) return;
+  modal('✏️ ویرایش مجموعه', companyForm(c), m=>{
+    c.name = $('[name=name]',m).value.trim()||c.name;
+    c.owner = $('[name=owner]',m).value.trim();
+    c.phone = $('[name=phone]',m).value.trim();
+    c.address = $('[name=address]',m).value.trim();
+    c.active = $('[name=active]',m).value==='1';
+    save(); render(); toast('ویرایش شد');
+  });
+}
+function delCompany(id){
+  if(!confirm('حذف شود؟')) return;
+  DB.companies = DB.companies.filter(x=>x.id!==id);
+  save(); render(); toast('حذف شد','warn');
+}
+
+/* ---- خریداران ---- */
+function vCustomers(){
+  return simpleListCard('🛒 خریداران', DB.customers,
+    ['نام','تلفن','آدرس','کد اقتصادی','وضعیت'],
+    c=>`<tr>
+      <td><b>${esc(c.name)}</b></td>
+      <td dir="ltr" style="text-align:right">${esc(c.phone||'—')}</td>
+      <td>${esc(c.address||'—')}</td>
+      <td dir="ltr" style="text-align:right">${esc(c.economicCode||'—')}</td>
+      <td><span class="badge ${c.active?'b-ok':'b-mut'}">${c.active?'فعال':'غیرفعال'}</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn sm" onclick="editCustomer('${c.id}')">✏️</button>
+        <button class="btn sm bad" onclick="delCustomer('${c.id}')">🗑️</button>
+      </td></tr>`,
+    'addCustomer','editCustomer','delCustomer','خریدار جدید');
+}
+function customerForm(c){
+  c = c||{};
+  return `<div class="grid2">
+    <label class="fld"><span>نام خریدار *</span><input name="name" value="${esc(c.name||'')}"></label>
+    <label class="fld"><span>تلفن</span><input name="phone" value="${esc(c.phone||'')}" dir="ltr"></label>
+    <label class="fld full"><span>آدرس</span><input name="address" value="${esc(c.address||'')}"></label>
+    <label class="fld"><span>کد اقتصادی</span><input name="economicCode" value="${esc(c.economicCode||'')}" dir="ltr"></label>
+    <label class="fld"><span>وضعیت</span><select name="active"><option value="1" ${c.active!==false?'selected':''}>فعال</option><option value="0" ${c.active===false?'selected':''}>غیرفعال</option></select></label>
+  </div>`;
+}
+function addCustomer(){
+  modal('＋ خریدار جدید', customerForm(), m=>{
+    const name = $('[name=name]',m).value.trim();
+    if(!name){ toast('نام الزامی','bad'); return false; }
+    DB.customers.push({id:uid(), name, phone:$('[name=phone]',m).value.trim(),
+      address:$('[name=address]',m).value.trim(), economicCode:$('[name=economicCode]',m).value.trim(),
+      active:$('[name=active]',m).value==='1'});
+    save(); render(); toast('ثبت شد');
+  });
+}
+function editCustomer(id){
+  const c = DB.customers.find(x=>x.id===id); if(!c) return;
+  modal('✏️ ویرایش خریدار', customerForm(c), m=>{
+    c.name = $('[name=name]',m).value.trim()||c.name;
+    c.phone = $('[name=phone]',m).value.trim();
+    c.address = $('[name=address]',m).value.trim();
+    c.economicCode = $('[name=economicCode]',m).value.trim();
+    c.active = $('[name=active]',m).value==='1';
+    save(); render(); toast('ویرایش شد');
+  });
+}
+function delCustomer(id){
+  if(!confirm('حذف شود؟')) return;
+  DB.customers = DB.customers.filter(x=>x.id!==id);
+  save(); render(); toast('حذف شد','warn');
+}
+
+/* ---- رانندگان ---- */
+function vDrivers(){
+  return simpleListCard('🧑‍✈️ رانندگان', DB.drivers,
+    ['نام','تلفن','شماره گواهینامه','وضعیت'],
+    d=>`<tr>
+      <td><b>${esc(d.name)}</b></td>
+      <td dir="ltr" style="text-align:right">${esc(d.phone||'—')}</td>
+      <td dir="ltr" style="text-align:right">${esc(d.license||'—')}</td>
+      <td><span class="badge ${d.active?'b-ok':'b-mut'}">${d.active?'فعال':'غیرفعال'}</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn sm" onclick="editDriver('${d.id}')">✏️</button>
+        <button class="btn sm bad" onclick="delDriver('${d.id}')">🗑️</button>
+      </td></tr>`,
+    'addDriver','editDriver','delDriver','راننده جدید');
+}
+function driverForm(d){
+  d = d||{};
+  return `<div class="grid2">
+    <label class="fld"><span>نام راننده *</span><input name="name" value="${esc(d.name||'')}"></label>
+    <label class="fld"><span>تلفن</span><input name="phone" value="${esc(d.phone||'')}" dir="ltr"></label>
+    <label class="fld"><span>شماره گواهینامه</span><input name="license" value="${esc(d.license||'')}" dir="ltr"></label>
+    <label class="fld"><span>وضعیت</span><select name="active"><option value="1" ${d.active!==false?'selected':''}>فعال</option><option value="0" ${d.active===false?'selected':''}>غیرفعال</option></select></label>
+  </div>`;
+}
+function addDriver(){
+  modal('＋ راننده جدید', driverForm(), m=>{
+    const name = $('[name=name]',m).value.trim();
+    if(!name){ toast('نام الزامی','bad'); return false; }
+    DB.drivers.push({id:uid(), name, phone:$('[name=phone]',m).value.trim(),
+      license:$('[name=license]',m).value.trim(), active:$('[name=active]',m).value==='1'});
+    save(); render(); toast('ثبت شد');
+  });
+}
+function editDriver(id){
+  const d = DB.drivers.find(x=>x.id===id); if(!d) return;
+  modal('✏️ ویرایش راننده', driverForm(d), m=>{
+    d.name = $('[name=name]',m).value.trim()||d.name;
+    d.phone = $('[name=phone]',m).value.trim();
+    d.license = $('[name=license]',m).value.trim();
+    d.active = $('[name=active]',m).value==='1';
+    save(); render(); toast('ویرایش شد');
+  });
+}
+function delDriver(id){
+  if(!confirm('حذف شود؟')) return;
+  DB.drivers = DB.drivers.filter(x=>x.id!==id);
+  save(); render(); toast('حذف شد','warn');
+}
+
+/* ---- کامیون‌ها ---- */
+function vTrucks(){
+  return simpleListCard('🚚 کامیون‌ها', DB.trucks,
+    ['پلاک','مدل','ظرفیت (kg)','وضعیت'],
+    t=>`<tr>
+      <td><b dir="ltr" style="display:block;text-align:right">${esc(t.plate)}</b></td>
+      <td>${esc(t.model||'—')}</td>
+      <td>${num(t.capacity||0)}</td>
+      <td><span class="badge ${t.active?'b-ok':'b-mut'}">${t.active?'فعال':'غیرفعال'}</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn sm" onclick="editTruck('${t.id}')">✏️</button>
+        <button class="btn sm bad" onclick="delTruck('${t.id}')">🗑️</button>
+      </td></tr>`,
+    'addTruck','editTruck','delTruck','کامیون جدید');
+}
+function truckForm(t){
+  t = t||{};
+  return `<div class="grid2">
+    <label class="fld"><span>پلاک *</span><input name="plate" value="${esc(t.plate||'')}" dir="ltr" placeholder="78 ع 452 ایران 11"></label>
+    <label class="fld"><span>مدل</span><input name="model" value="${esc(t.model||'')}"></label>
+    <label class="fld"><span>ظرفیت (kg)</span><input name="capacity" type="number" min="0" value="${t.capacity||0}"></label>
+    <label class="fld"><span>وضعیت</span><select name="active"><option value="1" ${t.active!==false?'selected':''}>فعال</option><option value="0" ${t.active===false?'selected':''}>غیرفعال</option></select></label>
+  </div>`;
+}
+function addTruck(){
+  modal('＋ کامیون جدید', truckForm(), m=>{
+    const plate = $('[name=plate]',m).value.trim();
+    if(!plate){ toast('پلاک الزامی','bad'); return false; }
+    DB.trucks.push({id:uid(), plate, model:$('[name=model]',m).value.trim(),
+      capacity:+$('[name=capacity]',m).value||0, active:$('[name=active]',m).value==='1'});
+    save(); render(); toast('ثبت شد');
+  });
+}
+function editTruck(id){
+  const t = DB.trucks.find(x=>x.id===id); if(!t) return;
+  modal('✏️ ویرایش کامیون', truckForm(t), m=>{
+    t.plate = $('[name=plate]',m).value.trim()||t.plate;
+    t.model = $('[name=model]',m).value.trim();
+    t.capacity = +$('[name=capacity]',m).value||0;
+    t.active = $('[name=active]',m).value==='1';
+    save(); render(); toast('ویرایش شد');
+  });
+}
+function delTruck(id){
+  if(!confirm('حذف شود؟')) return;
+  DB.trucks = DB.trucks.filter(x=>x.id!==id);
+  save(); render(); toast('حذف شد','warn');
+}
+
+/* ============================================================
+   18) کاربران
+   ============================================================ */
+function vUsers(){
+  const rows = DB.users.map(u=>`
+    <tr>
+      <td>${esc(u.name)}</td>
+      <td dir="ltr" style="text-align:right">${esc(u.username)}</td>
+      <td dir="ltr" style="text-align:right">${esc(u.password)}</td>
+      <td><span class="badge b-pri">${ROLES[u.role]?ROLES[u.role].label:u.role}</span></td>
+      <td><span class="badge ${u.active?'b-ok':'b-bad'}">${u.active?'فعال':'غیرفعال'}</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn sm" onclick="editUser('${u.id}')">✏️</button>
+        <button class="btn sm ${u.active?'warn':'ok'}" onclick="toggleUser('${u.id}')">${u.active?'🚫':'✅'}</button>
+        <button class="btn sm bad" onclick="delUser('${u.id}')">🗑️</button>
+      </td>
+    </tr>`).join('');
+
+  return `
+  <div class="card neu">
+    <h3>🔐 مدیریت کاربران <span class="badge b-info">${num(DB.users.length)}</span></h3>
+    <div class="toolbar"><button class="btn primary" onclick="addUser()">＋ کاربر جدید</button></div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>نام</th><th>نام کاربری</th><th>رمز</th><th>نقش</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+function userForm(u){
+  u = u||{};
+  return `<div class="grid2">
+    <label class="fld"><span>نام نمایشی *</span><input name="name" value="${esc(u.name||'')}"></label>
+    <label class="fld"><span>نام کاربری *</span><input name="username" value="${esc(u.username||'')}" dir="ltr"></label>
+    <label class="fld"><span>رمز عبور *</span><input name="password" value="${esc(u.password||'')}"></label>
+    <label class="fld"><span>نقش</span>
+      <select name="role" ${u.role==='admin'?'disabled':''}>
+        ${Object.entries(ROLES).map(([k,v])=>`<option value="${k}" ${k===u.role?'selected':''}>${v.label}</option>`).join('')}
+      </select></label>
+  </div>`;
+}
+function addUser(){
+  modal('＋ کاربر جدید', userForm(), m=>{
+    const name = $('[name=name]',m).value.trim();
+    const un = $('[name=username]',m).value.trim();
+    const pw = $('[name=password]',m).value;
+    if(!name||!un||!pw){ toast('همه فیلدها الزامی','bad'); return false; }
+    if(DB.users.some(x=>x.username===un)){ toast('نام کاربری تکراری','bad'); return false; }
+    DB.users.push({id:uid(), name, username:un, password:pw, role:$('[name=role]',m).value, active:true});
+    save(); render(); toast('کاربر اضافه شد');
+  });
+}
+function editUser(id){
+  const u = DB.users.find(x=>x.id===id); if(!u) return;
+  modal('✏️ ویرایش کاربر', userForm(u), m=>{
+    const un = $('[name=username]',m).value.trim();
+    if(DB.users.some(x=>x.id!==id && x.username===un)){ toast('نام کاربری تکراری','bad'); return false; }
+    u.name = $('[name=name]',m).value.trim();
+    u.username = un;
+    u.password = $('[name=password]',m).value;
+    if(u.role!=='admin') u.role = $('[name=role]',m).value;
+    save(); render(); toast('ویرایش شد');
+  });
+}
+function toggleUser(id){
+  const u = DB.users.find(x=>x.id===id); if(!u) return;
+  if(u.id===CU.id){ toast('حساب خودتان را نمی‌توانید غیرفعال کنید','bad'); return; }
+  u.active = !u.active; save(); render();
+}
+function delUser(id){
+  const u = DB.users.find(x=>x.id===id); if(!u) return;
+  if(u.id===CU.id){ toast('حساب خودتان را نمی‌توانید حذف کنید','bad'); return; }
+  if(!confirm('کاربر حذف شود؟')) return;
+  DB.users = DB.users.filter(x=>x.id!==id);
+  save(); render(); toast('حذف شد','warn');
+}
+
+/* ============================================================
+   19) تنظیمات
+   ============================================================ */
+function vSettings(){
+  return `
+  <div class="card neu">
+    <h3>⚙️ مشخصات شرکت</h3>
+    <div class="grid2">
+      <label class="fld"><span>نام کامل شرکت</span><input id="sCompany" value="${esc(DB.settings.company||'')}"></label>
+      <label class="fld"><span>نام تجاری (برند)</span><input id="sBrand" value="${esc(DB.settings.brand||'')}"></label>
+      <label class="fld"><span>سال کاری</span><input id="sYear" value="${esc(DB.settings.year||'')}"></label>
+      <label class="fld"><span>تلفن</span><input id="sPhone" value="${esc(DB.settings.phone||'')}" dir="ltr"></label>
+      <label class="fld full"><span>آدرس</span><input id="sAddress" value="${esc(DB.settings.address||'')}"></label>
+      <label class="fld"><span>کد اقتصادی</span><input id="sEco" value="${esc(DB.settings.economicCode||'')}" dir="ltr"></label>
+      <label class="fld"><span>شناسه ملی</span><input id="sNational" value="${esc(DB.settings.nationalId||'')}" dir="ltr"></label>
+      <label class="fld full"><span>اطلاعات بانکی</span><input id="sBank" value="${esc(DB.settings.bank||'')}"></label>
+      <label class="fld full"><span>متن پایین فاکتور</span><input id="sFooter" value="${esc(DB.settings.footerNote||'')}"></label>
+    </div>
+    <div style="margin-top:16px"><button class="btn primary" onclick="saveSettings()">💾 ذخیره تنظیمات</button></div>
+  </div>
+
+  <div class="card neu">
+    <h3>🔑 تغییر رمز خودم</h3>
+    <div class="grid2">
+      <label class="fld"><span>نام کاربری</span><input value="${esc(CU.username)}" dir="ltr" disabled></label>
+      <label class="fld"><span>رمز جدید</span><input id="newPass" type="password" placeholder="خالی = بدون تغییر"></label>
+    </div>
+    <div style="margin-top:16px"><button class="btn primary" onclick="changeMyPass()">🔑 تغییر رمز</button></div>
+  </div>
+
+  <div class="card neu">
+    <h3>🗄️ پشتیبان و بازیابی</h3>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn" onclick="exportJSON()">⬇️ دانلود پشتیبان JSON</button>
+      <label class="btn" style="cursor:pointer">⬆️ بازیابی از JSON
+        <input type="file" id="jsonIn" accept=".json" hidden></label>
+      <button class="btn bad" onclick="resetAll()">♻️ بازنشانی کامل</button>
+    </div>
+  </div>
+
+  <div class="card neu">
+    <h3>📊 آمار داده‌ها</h3>
+    <div class="hint">
+      محموله‌ها: <b>${num(DB.consignments.length)}</b> —
+      رکورد بسته‌بندی: <b>${num(DB.packing.length)}</b> —
+      قبض باسکول: <b>${num(DB.weighbridges.length)}</b> —
+      فاکتورها: <b>${num(DB.invoices.length)}</b> —
+      کارگران: <b>${num(DB.workers.length)}</b> —
+      میوه‌ها: <b>${num(DB.fruits.length)}</b> —
+      کاربران: <b>${num(DB.users.length)}</b>
+    </div>
+  </div>`;
+}
+function saveSettings(){
+  const s = DB.settings;
+  s.company = $('#sCompany').value.trim();
+  s.brand = $('#sBrand').value.trim();
+  s.year = $('#sYear').value.trim();
+  s.phone = $('#sPhone').value.trim();
+  s.address = $('#sAddress').value.trim();
+  s.economicCode = $('#sEco').value.trim();
+  s.nationalId = $('#sNational').value.trim();
+  s.bank = $('#sBank').value.trim();
+  s.footerNote = $('#sFooter').value.trim();
+  save(); render();
+  $('#brandName').textContent = s.brand||'میوه';
+  $('#brandYear').textContent = 'سال '+(s.year||'');
+  toast('تنظیمات ذخیره شد');
+}
+function changeMyPass(){
+  const np = $('#newPass').value;
+  if(!np){ toast('رمز جدید را وارد کنید','bad'); return; }
+  CU.password = np; save(); toast('رمز تغییر کرد'); render();
+}
+function resetAll(){
+  if(!confirm('تمام داده‌ها پاک و به حالت اولیه بازگردد؟')) return;
+  localStorage.removeItem(LS); localStorage.removeItem(SESSION);
+  seed(); CU=null;
+  $('#loginScreen').style.display=''; $('#app').style.display='none';
+}
+
+/* ============================================================
+   20) راهنما / مستندات
+   ============================================================ */
+function vDocs(){
+  return `
+  <div class="card neu">
+    <h3>📖 راهنمای کاربری سامانه</h3>
+    <div class="doc-item">
+      <b>1) ورود به سامانه</b>
+      <p>با نام کاربری و رمز عبور خود وارد شوید. اولین بار: admin/admin — مدیرعامل: manager/1234 — سرکارگر: foreman/1234 — حسابدار: acc/1234</p>
+    </div>
+    <div class="doc-item">
+      <b>2) ساخت محموله (سرکارگر)</b>
+      <p>منوی «محموله‌ها» → «محموله جدید» → انتخاب مجموعه (باغدار)، نوع میوه، کامیون، راننده و تاریخ. پس از ذخیره، به‌صورت خودکار به صفحه ثبت بسته‌بندی منتقل می‌شوید.</p>
+    </div>
+    <div class="doc-item">
+      <b>3) ثبت بسته‌بندی هر کارگر</b>
+      <p>در صفحه «ثبت بسته‌بندی»: کارگر، تعداد سبد، تعداد میوه داخل هر سبد و وزن هر سبد را وارد کنید. سیستم به‌طور خودکار مجموع میوه و وزن هر کارگر و کل محموله را حساب می‌کند.</p>
+    </div>
+    <div class="doc-item">
+      <b>4) جمع‌بندی خودکار محصولات</b>
+      <p>منوی «جمع‌بندی محصولات» تمام رکوردها را بر اساس میوه، کارگر و بازه تاریخ جمع می‌زند: تعداد سبد، تعداد میوه، مجموع وزن و میانگین وزن سبد. با دکمه پرینت می‌توانید گزارش A4 بگیرید.</p>
+    </div>
+    <div class="doc-item">
+      <b>5) قبض باسکول</b>
+      <p>در «قبض باسکول» → «قبض جدید»: وزن با بار (gross) و وزن فارغ (tare) را وارد کنید؛ وزن خالص خودکار محاسبه می‌شود. با دکمه 🖨️ قبض چاپی A4 با نمودار سهم کارگران دریافت می‌کنید.</p>
+    </div>
+    <div class="doc-item">
+      <b>6) صدور فاکتور</b>
+      <p>در «فاکتورها» → «فاکتور جدید»: خریدار را انتخاب و اقلام (میوه، وزن، قیمت هر کیلو) را اضافه کنید. یا با «فاکتور از روی محموله»، کل وزن یک محموله به‌صورت یک قلم فاکتور می‌شود. با ذخیره + پرینت، فاکتور A4 شامل جدول، نمودار و مبلغ به حروف چاپ می‌شود.</p>
+    </div>
+    <div class="doc-item">
+      <b>7) پنل مدیر — تعریف متغیرها</b>
+      <p>در منوهای «میوه‌ها»، «کارگران»، «مجموعه‌ها»، «خریداران»، «رانندگان» و «کامیون‌ها» می‌توانید همه‌ی موجودیت‌ها را اضافه، ویرایش یا غیرفعال کنید. قیمت هر کیلو هر میوه و وزن پیش‌فرض سبد در بخش «میوه‌ها» تنظیم می‌شود.</p>
+    </div>
+    <div class="doc-item">
+      <b>8) کاربران و سطوح دسترسی</b>
+      <p>۴ نقش وجود دارد: مدیر سیستم (کامل)، مدیرعامل (بدون مدیریت کاربران)، سرکارگر (ثبت بسته‌بندی و باسکول)، حسابدار (فاکتور، باسکول، گزارش). در بخش «کاربران» می‌توانید کاربر بسازید یا غیرفعال کنید.</p>
+    </div>
+    <div class="doc-item">
+      <b>9) پشتیبان‌گیری</b>
+      <p>در «تنظیمات» از دکمه «دانلود پشتیبان JSON» استفاده کنید. برای انتقال به دستگاه دیگر، فایل پشتیبان را در همان بخش بازیابی کنید. توجه: داده‌ها در مرورگر (localStorage) ذخیره می‌شوند.</p>
+    </div>
+    <div class="doc-item">
+      <b>10) خروجی اکسل</b>
+      <p>در هر صفحه از دکمه «خروجی اکسل» استفاده کنید. فایل شامل شیت‌های دانش‌آموزان، محموله‌ها، بسته‌بندی، باسکول و فاکتورها است.</p>
+    </div>
+  </div>
+
+  <div class="card neu">
+    <h3>🧠 نکات مهم عملیاتی</h3>
+    <div class="hint">
+      • وزن خالص باسکول باید با مجموع وزن بسته‌بندی محموله مقایسه شود؛ اختلاف بیش از ۲٪ را بررسی کنید.<br>
+      • هر کارگر در یک روز می‌تواند چند رکورد برای چند محموله ثبت کند.<br>
+      • برای چاپ صحیح A4، در تنظیمات مرورگر گزینه «Background graphics» را فعال کنید.<br>
+      • فاکتور و قبض باسکول به‌صورت دو نسخه چاپی قابل استفاده هستند (یک نسخه برای خریدار، یک نسخه بایگانی).
+    </div>
+  </div>`;
+}
+
+/* ============================================================
+   21) اکسل و JSON
+   ============================================================ */
+function exportExcel(){
+  if(typeof XLSX === 'undefined'){ toast('کتابخانه اکسل بارگذاری نشد','bad'); return; }
+  const wb = XLSX.utils.book_new();
+
+  const s1 = [['کد','تاریخ','مجموعه','میوه','کامیون','راننده','سبد','وزن (kg)','وضعیت']];
+  DB.consignments.forEach(c=>{
+    const t = consTotals(c.id);
+    s1.push([c.code, c.date, (getComp(c.companyId)||{}).name||'', fruitLabel(getFruit(c.fruitId)),
+      (getTrk(c.truckId)||{}).plate||'', (getDrv(c.driverId)||{}).name||'', t.baskets, t.weight, c.status||'']);
+  });
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(s1), 'محموله‌ها');
+
+  const s2 = [['کد محموله','تاریخ','کارگر','تعداد سبد','میوه در سبد','وزن هر سبد','کل میوه','کل وزن','یادداشت']];
+  DB.packing.forEach(p=>{
+    const c = getCons(p.consignmentId);
+    s2.push([c?c.code:'', p.date, (getWork(p.workerId)||{}).name||'', p.baskets, p.fruitsPerBasket,
+      p.weightPerBasket, p.baskets*p.fruitsPerBasket, p.baskets*p.weightPerBasket, p.note||'']);
+  });
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(s2), 'بسته‌بندی');
+
+  const s3 = [['کد قبض','تاریخ','ساعت','پلاک','راننده','محصول','وزن فارغ','وزن با بار','وزن خالص']];
+  DB.weighbridges.forEach(w=>{
+    s3.push([w.code, w.date, w.time||'', w.plate||'', (getDrv(w.driverId)||{}).name||'', w.product||'', w.tare, w.gross, w.net]);
+  });
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(s3), 'باسکول');
+
+  const s4 = [['شماره فاکتور','تاریخ','خریدار','اقلام','وزن کل','جمع','تخفیف','مالیات','نهایی']];
+  DB.invoices.forEach(i=>{
+    s4.push([i.code, i.date, i.customerName, i.items.length,
+      sum(i.items,x=>x.weight), i.subTotal, i.discount, i.taxAmount, i.total]);
+  });
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(s4), 'فاکتورها');
+
+  const s5 = [['نام','کد','تلفن','دستمزد روزانه','وضعیت']];
+  DB.workers.forEach(w=> s5.push([w.name, w.code||'', w.phone||'', w.dailyWage||0, w.active?'فعال':'غیرفعال']));
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(s5), 'کارگران');
+
+  XLSX.writeFile(wb, `fruit-export-${isoToday()}.xlsx`);
+  toast('فایل اکسل دانلود شد');
+}
+
+function exportJSON(){
+  const blob = new Blob([JSON.stringify(DB,null,2)],{type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `backup-fruit-${isoToday()}.json`;
+  a.click();
+  toast('پشتیبان دانلود شد');
+}
+
+document.addEventListener('change', e=>{
+  if(e.target && e.target.id==='jsonIn'){
+    const f = e.target.files[0]; if(!f) return;
+    const rd = new FileReader();
+    rd.onload = ev=>{
+      try{
+        const obj = JSON.parse(ev.target.result);
+        if(!obj.settings || !obj.users) throw 0;
+        DB = obj; migrate(); save(); render(); toast('بازیابی انجام شد');
+      }catch(err){ toast('فایل معتبر نیست','bad'); }
+    };
+    rd.readAsText(f);
+    e.target.value='';
+  }
+});
+
+/* ============================================================
+   22) شروع
+   ============================================================ */
+load();
+
+const savedSession = localStorage.getItem(SESSION);
+if(savedSession){
+  const u = DB.users.find(x=>x.id===savedSession && x.active);
+  if(u){ CU=u; showApp(); }
+} else {
+  $('#loginScreen').style.display='';
+  $('#app').style.display='none';
+}
+
+$('#q').addEventListener('input', e=>{
+  state.q = e.target.value;
+  if(CU) render();
+});
+
+/* تکمیل نام پیش‌فرض میوه در فاکتور جدید */
+document.addEventListener('input', e=>{
+  if(e.target && e.target.id==='ivFruit' && invDraft){
+    const f = getFruit(e.target.value);
+    const priceEl = document.getElementById('ivPrice');
+    if(f && priceEl && !priceEl.value) priceEl.value = f.pricePerKg || '';
+  }
+});
+document.addEventListener('change', e=>{
+  if(e.target && e.target.id==='ivFruit' && invDraft){
+    const f = getFruit(e.target.value);
+    const priceEl = document.getElementById('ivPrice');
+    if(f && priceEl) priceEl.value = f.pricePerKg || '';
+  }
+});
+</script>
+</body>
+</html>
